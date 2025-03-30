@@ -1,0 +1,285 @@
+# NYU/NYC Purity Test: Revised Technical Implementation
+
+## Overview
+This implementation will create a web application that closely mimics the Rice Purity Test in styling and functionality while adding NYU/NYC-specific questions and enhanced features for statistics tracking and sharing.
+
+## Tech Stack
+
+### Frontend
+- **Next.js with TypeScript**: For server-side rendering and type safety
+  - Strict TypeScript configuration for better type checking
+  - File structure following Next.js 14 App Router conventions
+- **React.js**: For component-based UI development
+- **TailwindCSS**: For styling that precisely matches the Rice Purity Test aesthetic
+  - Custom theme configuration to match exact colors and spacing
+- **Recharts**: For statistical data visualization
+
+### Backend
+- **Next.js API Routes**: For serverless API functionality
+- **MongoDB**: For storing anonymized results and statistics
+  - Collections: `results`, `aggregatedStats`, `timeBasedStats`
+  - No authentication/user accounts (keeping it simple)
+
+### Analytics & Tracking
+- **Google Analytics 4**: For visitor tracking and event monitoring
+  - Custom events for test starts, completions, and shares
+  - Goal tracking for completion rates
+- **Vercel Analytics**: For performance monitoring and user flow analysis
+
+### Hosting & Deployment
+- **Vercel**: For hosting the Next.js application with automatic deployment
+- **MongoDB Atlas**: Cloud hosting for the database
+- **GitHub**: For version control and CI/CD integration
+
+### Sharing Features
+- **ShareThis API**: For comprehensive social media sharing and like/share counts
+- **QR Code generation**: Using `qrcode` library to generate shareable QR codes
+- **React Native Deep Linking**: For better sharing on mobile devices
+
+## Application Structure
+
+### 1. Test Page `/`
+- Exact styling match to Rice Purity Test (white background, black text, same font family, size, and spacing)
+- Question display with checkboxes matching original styling
+- Submit button for calculating score (no real-time calculation)
+- Mobile-responsive design with identical feel on all devices
+
+### 2. Results Page `/results/[score]`
+- Display final score with interpretation
+- QR code for sharing physical results
+- ShareThis integration buttons for major platforms
+- "View Statistics" button linking to stats page
+- "Take Again" button to restart the test
+
+### 3. Statistics Page `/statistics`
+- Comprehensive data visualization including:
+  - Overall score distribution (histogram)
+  - Time-based trends showing average scores over time
+  - Most/least common experiences
+  - Question-specific statistics
+- Mobile-optimized interactive charts
+- Shareable insights with their own URLs
+
+## Technical Specifications
+
+### Database Schema
+
+```typescript
+// Result document structure
+interface TestResult {
+  _id: ObjectId;
+  score: number;
+  answers: boolean[];  // Array of 100 boolean values
+  timestamp: Date;
+  deviceType: string;  // "mobile" | "tablet" | "desktop"
+  referrer: string;    // Where the user came from
+  shareSource?: string; // If they came from a share
+}
+
+// Aggregated statistics structure
+interface AggregatedStats {
+  _id: ObjectId;
+  lastUpdated: Date;
+  totalResponses: number;
+  averageScore: number;
+  medianScore: number;
+  scoreDistribution: {
+    range: string;     // e.g., "0-10", "11-20", etc.
+    count: number;
+  }[];
+  questionStats: {
+    questionId: number;
+    yesPercentage: number;
+    totalResponses: number;
+  }[];
+}
+
+// Time-based statistics structure
+interface TimeBasedStats {
+  _id: ObjectId;
+  period: string;      // "daily" | "weekly" | "monthly"
+  date: Date;
+  averageScore: number;
+  totalResponses: number;
+  newResponses: number;
+}
+```
+
+### API Endpoints
+
+```typescript
+// Next.js API routes
+
+// POST /api/submit-result
+// Submit test results and get score
+interface SubmitResultRequest {
+  answers: boolean[];
+}
+
+interface SubmitResultResponse {
+  score: number;
+  totalParticipants: number;
+  averageScore: number;
+}
+
+// GET /api/statistics
+// Get comprehensive statistics
+interface StatisticsResponse {
+  overall: {
+    totalParticipants: number;
+    averageScore: number;
+    medianScore: number;
+  };
+  distribution: {
+    range: string;
+    count: number;
+    percentage: number;
+  }[];
+  questionStats: {
+    questionId: number;
+    questionText: string;
+    yesPercentage: number;
+  }[];
+  timeBasedTrends: {
+    period: string;
+    date: string;
+    averageScore: number;
+    responses: number;
+  }[];
+}
+
+// GET /api/share-stats
+// Get sharing statistics
+interface ShareStatsResponse {
+  totalShares: number;
+  platformBreakdown: {
+    platform: string;
+    count: number;
+    percentage: number;
+  }[];
+}
+```
+
+### Styling Specifications
+
+```typescript
+// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        // Exact Rice Purity Test colors
+        background: '#ffffff',
+        text: '#000000',
+        checkbox: '#000000',
+        button: '#000000',
+        buttonText: '#ffffff',
+      },
+      fontFamily: {
+        // Matching Rice Purity Test font
+        sans: ['Arial', 'sans-serif'],
+      },
+      fontSize: {
+        // Exact sizes from Rice Purity Test
+        heading: '24px',
+        subheading: '18px',
+        body: '16px',
+        button: '16px',
+      },
+      spacing: {
+        // Matching Rice Purity Test spacing
+        questionGap: '12px',
+        sectionGap: '24px',
+        pageMargin: '16px',
+      },
+    },
+  },
+}
+```
+
+## Implementation Plan
+
+### Phase 1: Core Test Implementation (3 days)
+1. Set up Next.js project with TypeScript and TailwindCSS
+2. Create exact styling clone of Rice Purity Test
+3. Implement question display and answer collection
+4. Set up MongoDB connection and result storage
+5. Deploy initial version to Vercel
+
+### Phase 2: Results & Statistics (4 days)
+1. Implement score calculation logic
+2. Create results page with QR code generation
+3. Develop statistical aggregation functions
+4. Build comprehensive statistics page with charts
+5. Implement time-based trend tracking
+
+### Phase 3: Sharing & Analytics (3 days)
+1. Integrate ShareThis API with custom tracking
+2. Set up Google Analytics and Vercel Analytics
+3. Implement deep linking configuration
+4. Add social sharing preview metadata
+5. Test and optimize sharing flows
+
+### Phase 4: Optimization & Launch (2 days)
+1. Optimize mobile experience
+2. Performance testing and optimization
+3. Add NYU/NYC-specific content
+4. Final styling adjustments
+5. Launch preparation
+
+## Mobile Responsiveness
+- Implement mobile-first design approach
+- Use responsive breakpoints matching Rice Purity Test
+- Test on iOS and Android devices of various sizes
+- Ensure ShareThis buttons are properly sized for touch
+- Optimize chart rendering for mobile screens
+
+## Analytics Implementation
+```typescript
+// analytics.ts
+export const trackEvent = (eventName: string, properties?: Record<string, any>) => {
+  // Google Analytics 4 event tracking
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', eventName, properties);
+  }
+  
+  // Vercel Analytics
+  if (typeof window !== 'undefined' && window.va) {
+    window.va('event', {
+      name: eventName,
+      ...properties
+    });
+  }
+};
+
+// Track key events
+export const trackEvents = {
+  testStarted: () => trackEvent('test_started'),
+  questionAnswered: (questionId: number) => trackEvent('question_answered', { questionId }),
+  testCompleted: (score: number) => trackEvent('test_completed', { score }),
+  resultShared: (platform: string, score: number) => trackEvent('result_shared', { platform, score }),
+  statisticsViewed: () => trackEvent('statistics_viewed'),
+};
+```
+
+## Sharing Implementation
+- Configure `next-share` or ShareThis API for social buttons
+- Implement custom share tracking to count shares by platform
+- Generate dynamic OG images for better social media previews
+- Create shareable URLs with embedded scores
+- Configure deep linking for mobile app-like experience
+
+## Statistics Processing
+- Schedule regular aggregation jobs to update statistics
+- Implement efficient MongoDB aggregation pipelines
+- Cache commonly accessed statistics data
+- Create API endpoints with appropriate rate limiting
+- Build time-series data storage for trend analysis
+
+## Security & Performance Considerations
+- Implement rate limiting on all API endpoints
+- Use Edge Functions on Vercel for faster global performance
+- Set up proper CORS configuration
+- Optimize bundle size for faster initial load
+- Implement appropriate caching strategies
+- Store only anonymous data with no personally identifiable information
