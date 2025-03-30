@@ -205,66 +205,141 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
     setIsCapturing(true);
 
     try {
-      // Step 1: Create a screenshot of the results (score, interpretation, and QR code)
-      const captureElement = resultsRef.current;
-      const canvas = await html2canvas(captureElement, {
-        scale: 2, // Higher resolution
-        useCORS: true, // Allow cross-origin images
-        allowTaint: true,
-        backgroundColor: "#fcf6e3", // Match the background color
-        logging: false,
-      });
-
-      // Step 2: Convert canvas to blob and download
-      const imgData = canvas.toDataURL("image/png");
-      const blob = await (await fetch(imgData)).blob();
-
-      // Create a download link for the image
-      const filename = `nyu-purity-test-score-${score}.png`;
-
-      if (navigator.share && isMobile) {
-        // Use Web Share API if available (modern mobile browsers)
-        const file = new File([blob], filename, { type: "image/png" });
-
+      // For iOS Safari, we'll take a more direct approach
+      if (isIOS) {
         try {
-          await navigator.share({
-            files: [file],
-            title: "My NYU Purity Test Score",
-            text: `I scored ${score}/100 on the NYU Purity Test! ${interpretation}`,
+          // Step 1: Create a screenshot of the results with optimized settings for iOS
+          const captureElement = resultsRef.current;
+          const canvas = await html2canvas(captureElement, {
+            scale: 1.5, // Lower resolution for iOS to prevent memory issues
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: "#fcf6e3",
+            logging: false,
+            removeContainer: true, // Helps with memory usage
+            // iOS Safari-specific optimizations
+            ignoreElements: (element: Element) => {
+              // Skip complex animations that might cause issues
+              return element.classList.contains("animate-spin");
+            },
+            onclone: (document, element) => {
+              // Simplify the DOM for capture to prevent memory issues
+              const animations = element.querySelectorAll(
+                ".animate-spin, .animate-pulse"
+              );
+              animations.forEach((el) =>
+                el.classList.remove("animate-spin", "animate-pulse")
+              );
+              return element;
+            },
           });
 
-          // After share dialog closes, open Instagram stories
+          // Convert to smaller file
+          const imgData = canvas.toDataURL("image/jpeg", 0.8); // Use JPEG with 80% quality for smaller file size
+
+          // Create a download link for the image
+          const blob = await (await fetch(imgData)).blob();
+          const filename = `nyu-purity-test-score-${score}.jpg`;
+
+          // Create download link
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          // After a delay, open Instagram
           setTimeout(() => {
             openInstagramStories();
-          }, 1000);
+          }, 1500);
+        } catch (iosError) {
+          console.error("iOS specific error:", iosError);
 
-          return;
-        } catch (err) {
-          console.log(
-            "Share API failed, falling back to download + deep link",
-            err
-          );
-          // Fall back to manual download method
+          // Fallback: Just open Instagram stories without the screenshot
+          setTimeout(() => {
+            alert(
+              "We couldn't create an image automatically. Please take a screenshot of your results, then open Instagram to share it."
+            );
+            openInstagramStories();
+          }, 500);
         }
+      } else {
+        // Non-iOS approach (Android/desktop) - keep original implementation
+        // Step 1: Create a screenshot of the results
+        const captureElement = resultsRef.current;
+        const canvas = await html2canvas(captureElement, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: "#fcf6e3",
+          logging: false,
+        });
+
+        // Step 2: Convert canvas to blob and download
+        const imgData = canvas.toDataURL("image/png");
+        const blob = await (await fetch(imgData)).blob();
+
+        // Create a download link for the image
+        const filename = `nyu-purity-test-score-${score}.png`;
+
+        if (navigator.share && isMobile) {
+          // Use Web Share API if available (modern mobile browsers)
+          const file = new File([blob], filename, { type: "image/png" });
+
+          try {
+            await navigator.share({
+              files: [file],
+              title: "My NYU Purity Test Score",
+              text: `I scored ${score}/100 on the NYU Purity Test! ${interpretation}`,
+            });
+
+            // After share dialog closes, open Instagram stories
+            setTimeout(() => {
+              openInstagramStories();
+            }, 1000);
+
+            return;
+          } catch (err) {
+            console.log(
+              "Share API failed, falling back to download + deep link",
+              err
+            );
+            // Fall back to manual download method
+          }
+        }
+
+        // Manual download
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Step 3: After a small delay, open Instagram's story camera
+        setTimeout(() => {
+          openInstagramStories();
+        }, 1500);
       }
-
-      // Manual download
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Step 3: After a small delay, open Instagram's story camera
-      setTimeout(() => {
-        openInstagramStories();
-      }, 1500);
     } catch (error) {
       console.error("Error capturing or sharing screenshot:", error);
-      alert(
-        "There was an error creating your shareable image. Please try again."
-      );
+
+      // More user-friendly error handling with specific fallback
+      if (isMobile) {
+        alert(
+          "We couldn't create a shareable image automatically. You can take a screenshot manually and share it to Instagram."
+        );
+
+        // Still try to open Instagram even if the image creation failed
+        setTimeout(() => {
+          openInstagramStories();
+        }, 1000);
+      } else {
+        alert(
+          "There was an error creating your shareable image. You can take a screenshot manually."
+        );
+      }
     } finally {
       setIsCapturing(false);
     }
