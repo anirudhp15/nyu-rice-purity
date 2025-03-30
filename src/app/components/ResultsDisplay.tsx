@@ -19,9 +19,10 @@ import {
 } from "react-share";
 import { trackEvents } from "@/app/lib/analytics";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiLink, FiRepeat } from "react-icons/fi";
+import html2canvas from "html2canvas";
 
 interface ResultsDisplayProps {
   score: number;
@@ -165,6 +166,8 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
+  const resultsRef = useRef<HTMLDivElement>(null);
   const interpretation = getScoreInterpretation(score);
   const shareUrl = "https://nyupuritytest.com";
   const shareTitle = `I scored ${score}/100 on the NYU Purity Test! #NYUPurityTest`;
@@ -183,75 +186,119 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
       setIsIOS(isIOSDevice);
     };
     checkDevice();
+
+    // Dynamically import html2canvas only on client side
+    import("html2canvas").catch((err) => {
+      console.error("Failed to load html2canvas", err);
+    });
   }, []);
 
   const handleShare = (platform: string) => {
     trackEvents.resultShared(platform, score);
   };
 
-  // Instagram sharing function - works on mobile devices
-  const shareToInstagram = () => {
+  // New Instagram sharing function using screenshot + deep linking approach
+  const shareToInstagram = async () => {
+    if (!resultsRef.current) return;
+
     handleShare("instagram");
+    setIsCapturing(true);
 
-    if (isMobile) {
-      // Create a properly formatted deep link to Instagram Stories
-      // Instagram requires specific parameters to open stories creation correctly
+    try {
+      // Step 1: Create a screenshot of the results (score, interpretation, and QR code)
+      const captureElement = resultsRef.current;
+      const canvas = await html2canvas(captureElement, {
+        scale: 2, // Higher resolution
+        useCORS: true, // Allow cross-origin images
+        allowTaint: true,
+        backgroundColor: "#fcf6e3", // Match the background color
+        logging: false,
+      });
 
-      // Create content for the story
-      const storyText = `I scored ${score}/100 on the NYU Purity Test!\n${interpretation}`;
+      // Step 2: Convert canvas to blob and download
+      const imgData = canvas.toDataURL("image/png");
+      const blob = await (await fetch(imgData)).blob();
 
-      // Format hashtags
-      const hashtags = encodeURIComponent("NYUPurityTest,NYU,RicePurityTest");
+      // Create a download link for the image
+      const filename = `nyu-purity-test-score-${score}.png`;
 
-      // Select background color based on score
-      let bgColor = "%23c13584"; // Default Instagram purple in hex (encoded)
-      if (score >= 80) {
-        bgColor = "%23ffffff"; // White for high scores (Pure)
-      } else if (score >= 50) {
-        bgColor = "%23833AB4"; // Purple for medium scores
-      } else {
-        bgColor = "%23fd1d1d"; // Red for low scores
+      if (navigator.share && isMobile) {
+        // Use Web Share API if available (modern mobile browsers)
+        const file = new File([blob], filename, { type: "image/png" });
+
+        try {
+          await navigator.share({
+            files: [file],
+            title: "My NYU Purity Test Score",
+            text: `I scored ${score}/100 on the NYU Purity Test! ${interpretation}`,
+          });
+
+          // After share dialog closes, open Instagram stories
+          setTimeout(() => {
+            openInstagramStories();
+          }, 1000);
+
+          return;
+        } catch (err) {
+          console.log(
+            "Share API failed, falling back to download + deep link",
+            err
+          );
+          // Fall back to manual download method
+        }
       }
 
-      // Create story URL with proper parameters
-      // Note: The full feature set requires Instagram's sharing SDK, but this works on most devices
-      const instagramUrl = `instagram://story?source_application=nyupuritytest&background_color=${bgColor}&hashtags=${hashtags}`;
+      // Manual download
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Step 3: After a small delay, open Instagram's story camera
+      setTimeout(() => {
+        openInstagramStories();
+      }, 1500);
+    } catch (error) {
+      console.error("Error capturing or sharing screenshot:", error);
+      alert(
+        "There was an error creating your shareable image. Please try again."
+      );
+    } finally {
+      setIsCapturing(false);
+    }
+  };
+
+  // Helper function to open Instagram stories
+  const openInstagramStories = () => {
+    // Different approaches for iOS and Android
+    if (isMobile) {
+      // Instagram story deep links
+      const instagramUrl = "instagram://story-camera";
 
       try {
-        // Try to open Instagram - we'll now use a different approach for iOS vs Android
-        if (isIOS) {
-          // iOS uses a different format than Android
-          window.location.href = instagramUrl;
-        } else {
-          // Android may need a different approach
-          const link = document.createElement("a");
-          link.href = instagramUrl;
-          link.target = "_blank";
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }
+        // Try to open Instagram directly
+        window.location.href = instagramUrl;
 
-        // Set a timeout to show a message if Instagram doesn't open or returns quickly
+        // Set a timeout to check if Instagram opened successfully
         setTimeout(() => {
-          // Check if we can detect if the app was successfully opened
-          // If the focus is still on our page after this timeout, probably Instagram wasn't opened
           if (document.hasFocus()) {
+            // If we still have focus, Instagram didn't open
             alert(
-              "Instagram may not have opened correctly. Try sharing a screenshot instead or check that you have the Instagram app installed."
+              "Please make sure you have Instagram installed. You can also manually open Instagram and share the image from your camera roll."
             );
           }
-        }, 2500);
+        }, 2000);
       } catch (e) {
-        // Fallback if there's any error
         alert(
-          "There was an issue opening Instagram. Try taking a screenshot and sharing it to your story manually."
+          "Please open Instagram and share the image from your camera roll."
         );
       }
     } else {
-      // On desktop, just show instructions
+      // On desktop, show instructions
       alert(
-        "Instagram Stories sharing works best on mobile devices. Take a screenshot of your result to share it to your story."
+        "The image has been downloaded. Open Instagram on your mobile device and share it to your story."
       );
     }
   };
@@ -363,6 +410,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
         initial="hidden"
         animate={isLoaded ? "visible" : "hidden"}
         variants={containerVariants}
+        ref={resultsRef}
       >
         {/* Header Image */}
         <motion.div
@@ -423,15 +471,21 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
               variants={itemVariants}
             >
               {/* Instagram Share Button */}
-              {/* <motion.div custom={0} variants={shareButtonVariants}>
+              <motion.div custom={0} variants={shareButtonVariants}>
                 <button
                   onClick={shareToInstagram}
-                  className="transition-opacity hover:opacity-80"
+                  disabled={isCapturing}
+                  className="relative transition-opacity hover:opacity-80"
                   aria-label="Share to Instagram"
                 >
+                  {isCapturing ? (
+                    <div className="flex absolute inset-0 justify-center items-center">
+                      <div className="w-5 h-5 border-t-2 border-[#ffffff] rounded-full animate-spin"></div>
+                    </div>
+                  ) : null}
                   <InstagramIcon size={32} round={true} />
                 </button>
-              </motion.div> */}
+              </motion.div>
 
               {/* Twitter Share Button */}
               <motion.div custom={1} variants={shareButtonVariants}>
