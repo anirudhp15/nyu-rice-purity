@@ -111,13 +111,13 @@ export default function TestForm() {
 
       <div className="p-6 bg-[#fcf6e3]">
         <motion.p
-          className="mx-auto mb-8 max-w-lg font-serif text-lg text-black"
+          className="mx-auto mb-8 max-w-xl font-serif text-lg text-black"
           variants={itemVariants}
         >
-          The first-ever NYU Purity Test. Serving as a way for students to bond
-          over nights spent debating whether lining up at Phebe's counts as
-          networking or if getting ghosted by Citi after a Superday means you're
-          officially fucked.
+          The first-ever NYU Purity Test, for students to bond over nights spent
+          debating whether lining up at Phebe's counts as networking or if
+          getting ghosted by Citi after a Superday means you're officially
+          fucked.
         </motion.p>
         <motion.p
           className="mx-auto mb-8 max-w-lg font-serif text-sm text-black"
@@ -125,6 +125,13 @@ export default function TestForm() {
         >
           Check every item you've done. Your purity score will be calculated at
           the end.
+        </motion.p>
+
+        <motion.p
+          className="pl-2 mb-4 max-w-lg font-serif text-sm text-left text-black"
+          variants={itemVariants}
+        >
+          Have you ever...
         </motion.p>
 
         <form onSubmit={handleSubmit} className="text-left">
@@ -204,7 +211,8 @@ export default function TestForm() {
       >
         <p className="font-serif">
           <span className="font-bold">Caution:</span> This is not a bucket list.
-          Completion of all items on this test may result in academic probation.
+          Completing this test might leave you safe-riding back from the ER at
+          6am with no ID.
         </p>
         <p className="mt-1 font-serif">
           Based on the Rice Purity Test. Made for NYU students, by NYU students.

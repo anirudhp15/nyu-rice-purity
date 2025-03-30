@@ -56,7 +56,7 @@ body::after {
   height: 100%;
   background-image: url("/images/mascotColor.png");
   /* Use a larger size with padding built in */
-  background-size: 140px 100px;
+  background-size: 140px 80px;
   /* Use round for equal spacing */
   background-repeat: round;
   /* Make it less obtrusive */
