@@ -42,7 +42,7 @@ export default async function ResultsPage({ params }: Props) {
   }
 
   return (
-    <main className="min-h-screen py-8 px-pageMargin">
+    <main>
       <ResultsDisplay score={score} />
     </main>
   );

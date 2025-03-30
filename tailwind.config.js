@@ -8,29 +8,35 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Exact Rice Purity Test colors
-        background: "#ffffff",
+        // Rice Purity Test colors
+        background: "#F4F4F4",
+        primary: "#640000",
+        secondary: "#8B0000",
         text: "#000000",
         checkbox: "#000000",
-        button: "#000000",
+        button: "#640000",
         buttonText: "#ffffff",
       },
       fontFamily: {
         // Matching Rice Purity Test font
         sans: ["Arial", "sans-serif"],
+        mono: ["Courier New", "monospace"],
       },
       fontSize: {
-        // Exact sizes from Rice Purity Test
-        heading: "24px",
-        subheading: "18px",
-        body: "16px",
-        button: "16px",
+        // Rice Purity Test font sizes
+        heading: "2rem",
+        subheading: "1.2rem",
+        body: "1rem",
+        button: "1.125rem",
       },
       spacing: {
-        // Matching Rice Purity Test spacing
-        questionGap: "12px",
-        sectionGap: "24px",
-        pageMargin: "16px",
+        // Rice Purity Test spacing
+        questionGap: "0.5rem",
+        sectionGap: "2rem",
+        pageMargin: "1rem",
+      },
+      borderWidth: {
+        3: "3px",
       },
     },
   },

@@ -13,7 +13,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">{children}</body>
+      <body className="px-4 py-8 min-h-screen">
+        <div className="mascot-overlay"></div>
+        <div className="relative z-10 mx-auto max-w-3xl">{children}</div>
+      </body>
     </html>
   );
 }

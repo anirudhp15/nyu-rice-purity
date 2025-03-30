@@ -73,15 +73,15 @@ export default function StatisticsDisplay() {
   }, []);
 
   if (loading) {
-    return <div className="text-center p-8">Loading statistics...</div>;
+    return <div className="p-8 text-center">Loading statistics...</div>;
   }
 
   if (error) {
-    return <div className="text-center p-8 text-red-500">Error: {error}</div>;
+    return <div className="p-8 text-center text-red-500">Error: {error}</div>;
   }
 
   if (!statistics) {
-    return <div className="text-center p-8">No statistics available</div>;
+    return <div className="p-8 text-center">No statistics available</div>;
   }
 
   // Most common and least common experiences
@@ -92,29 +92,29 @@ export default function StatisticsDisplay() {
   const leastCommon = sortedQuestionStats.slice(-5).reverse();
 
   return (
-    <div className="max-w-4xl mx-auto bg-white p-4 md:p-8">
-      <h1 className="text-heading font-bold text-center mb-6">
+    <div className="p-4 mx-auto max-w-4xl bg-white md:p-8">
+      <h1 className="mb-6 font-bold text-center text-heading">
         NYU/NYC Purity Test Statistics
       </h1>
 
       <div className="mb-sectionGap">
-        <h2 className="text-subheading font-semibold mb-4">Overall Stats</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-          <div className="bg-gray-50 p-4 rounded">
-            <p className="text-body font-medium">Total Participants</p>
-            <p className="text-heading font-bold">
+        <h2 className="mb-4 font-semibold text-subheading">Overall Stats</h2>
+        <div className="grid grid-cols-1 gap-4 text-center md:grid-cols-3">
+          <div className="p-4 bg-gray-50 rounded">
+            <p className="font-medium text-body">Total Participants</p>
+            <p className="font-bold text-heading">
               {statistics.overall.totalParticipants.toLocaleString()}
             </p>
           </div>
-          <div className="bg-gray-50 p-4 rounded">
-            <p className="text-body font-medium">Average Score</p>
-            <p className="text-heading font-bold">
+          <div className="p-4 bg-gray-50 rounded">
+            <p className="font-medium text-body">Average Score</p>
+            <p className="font-bold text-heading">
               {statistics.overall.averageScore.toFixed(1)}
             </p>
           </div>
-          <div className="bg-gray-50 p-4 rounded">
-            <p className="text-body font-medium">Median Score</p>
-            <p className="text-heading font-bold">
+          <div className="p-4 bg-gray-50 rounded">
+            <p className="font-medium text-body">Median Score</p>
+            <p className="font-bold text-heading">
               {statistics.overall.medianScore}
             </p>
           </div>
@@ -122,7 +122,7 @@ export default function StatisticsDisplay() {
       </div>
 
       <div className="mb-sectionGap">
-        <h2 className="text-subheading font-semibold mb-4">
+        <h2 className="mb-4 font-semibold text-subheading">
           Score Distribution
         </h2>
         <div className="h-80">
@@ -144,7 +144,7 @@ export default function StatisticsDisplay() {
       </div>
 
       <div className="mb-sectionGap">
-        <h2 className="text-subheading font-semibold mb-4">
+        <h2 className="mb-4 font-semibold text-subheading">
           Score Trends Over Time
         </h2>
         <div className="h-80">
@@ -167,7 +167,7 @@ export default function StatisticsDisplay() {
       </div>
 
       <div className="mb-sectionGap">
-        <h2 className="text-subheading font-semibold mb-4">
+        <h2 className="mb-4 font-semibold text-subheading">
           Most Common Experiences
         </h2>
         <ul className="list-disc list-inside">
@@ -183,7 +183,7 @@ export default function StatisticsDisplay() {
       </div>
 
       <div className="mb-sectionGap">
-        <h2 className="text-subheading font-semibold mb-4">
+        <h2 className="mb-4 font-semibold text-subheading">
           Least Common Experiences
         </h2>
         <ul className="list-disc list-inside">
@@ -201,7 +201,7 @@ export default function StatisticsDisplay() {
       <div className="flex justify-center">
         <Link
           href="/"
-          className="bg-button text-buttonText text-button font-medium py-2 px-6 rounded hover:bg-gray-800"
+          className="px-6 py-2 font-medium rounded bg-button text-buttonText text-button hover:bg-gray-800"
         >
           Take the Test Again
         </Link>
