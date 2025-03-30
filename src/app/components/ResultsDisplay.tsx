@@ -166,7 +166,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const interpretation = getScoreInterpretation(score);
-  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+  const shareUrl = "https://nyupuritytest.com";
   const shareTitle = `I scored ${score}/100 on the NYU Purity Test! #NYUPurityTest`;
 
   useEffect(() => {
@@ -423,7 +423,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
               variants={itemVariants}
             >
               {/* Instagram Share Button */}
-              <motion.div custom={0} variants={shareButtonVariants}>
+              {/* <motion.div custom={0} variants={shareButtonVariants}>
                 <button
                   onClick={shareToInstagram}
                   className="transition-opacity hover:opacity-80"
@@ -431,7 +431,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
                 >
                   <InstagramIcon size={32} round={true} />
                 </button>
-              </motion.div>
+              </motion.div> */}
 
               {/* Twitter Share Button */}
               <motion.div custom={1} variants={shareButtonVariants}>
@@ -471,7 +471,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
               </motion.div>
 
               {/* Reddit Share Button */}
-              <motion.div custom={4} variants={shareButtonVariants}>
+              {/* <motion.div custom={4} variants={shareButtonVariants}>
                 <RedditShareButton
                   url={shareUrl}
                   title={shareTitle}
@@ -480,7 +480,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
                 >
                   <RedditIcon size={32} round bgStyle={{ fill: "#FF5700" }} />
                 </RedditShareButton>
-              </motion.div>
+              </motion.div> */}
 
               {/* iMessage Share Button (shows conditionally for iOS devices) */}
               <motion.div custom={6} variants={shareButtonVariants}>
@@ -497,12 +497,12 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
 
           {/* Action Buttons */}
           <motion.div
-            className="flex flex-row gap-3 justify-center"
+            className="flex flex-row gap-2 justify-center"
             variants={itemVariants}
           >
             <motion.button
               onClick={copyToClipboard}
-              className="flex items-center justify-center font-bold gap-2 px-4 py-2 text-sm text-[#57068C] bg-white border border-[#57068C] rounded-full hover:bg-gray-50 transition-colors group"
+              className="flex items-center justify-center whitespace-nowrap font-bold gap-2 px-4 py-2 text-xs lg:text-sm text-[#57068C] bg-white border border-[#57068C] rounded-full hover:bg-gray-50 transition-colors group"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -512,7 +512,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href="/"
-                className="flex items-center gap-2 px-6 py-3 text-sm font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors group"
+                className="flex items-center gap-2 px-4 py-2 whitespace-nowrap text-xs lg:text-sm font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors group"
               >
                 <FiRepeat className="w-4 h-4 transition-transform group-hover:rotate-180" />
                 Take Test Again
