@@ -40,6 +40,14 @@ const validateReferrer = (referrer: string): string => {
   }
 };
 
+// Simple encoding function - must match the one in the results page
+function encodeScore(score: number): string {
+  // Base64 encode and add some random-looking characters
+  const encoded = Buffer.from(`s${score}`).toString("base64");
+  // Replace characters that would make URLs problematic
+  return encoded.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Apply rate limiting - stricter limits for submission endpoint
@@ -79,7 +87,9 @@ export async function POST(request: NextRequest) {
 
     // Calculate score
     const score = calculateScore(answers);
-    console.log(`API: Calculated score: ${score}`);
+    // Encode the score for the URL
+    const encodedScore = encodeScore(score);
+    console.log(`API: Calculated score: ${score}, encoded as: ${encodedScore}`);
 
     // Get device and referrer info with validation
     const userAgent = request.headers.get("user-agent") || "";
@@ -107,10 +117,11 @@ export async function POST(request: NextRequest) {
       });
       console.log("API: Result saved successfully", { id: createdResult._id });
 
-      // Return the score without trying to get aggregated stats
+      // Return the encoded score without trying to get aggregated stats
       // This simplifies the process to focus on saving the individual result
       return NextResponse.json({
         score,
+        encodedScore, // Include both for compatibility
         success: true,
         message: "Result saved successfully",
       });
@@ -120,6 +131,7 @@ export async function POST(request: NextRequest) {
       // while you debug the MongoDB issue
       return NextResponse.json({
         score,
+        encodedScore, // Include both for compatibility
         success: false,
         dbError: dbError.message,
       });

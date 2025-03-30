@@ -7,27 +7,49 @@ type Props = {
   searchParams?: { [key: string]: string | string[] | undefined };
 };
 
-// Validate a score to ensure it's an integer between 0-100
-function validateScore(score: string): number | null {
-  // Check if the score is a valid number
-  const parsedScore = parseInt(score, 10);
+// Simple encoding/decoding functions
+function encodeScore(score: number): string {
+  // Base64 encode and add some random-looking characters
+  const encoded = Buffer.from(`s${score}`).toString("base64");
+  // Replace characters that would make URLs problematic
+  return encoded.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+}
 
-  // Ensure it's a valid integer between 0-100
-  if (
-    isNaN(parsedScore) ||
-    parsedScore < 0 ||
-    parsedScore > 100 ||
-    parsedScore.toString() !== score
-  ) {
+function decodeScore(encoded: string): number | null {
+  try {
+    // Restore base64 standard characters
+    const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
+    // Add padding if needed
+    const padded = base64.padEnd(
+      base64.length + ((4 - (base64.length % 4)) % 4),
+      "="
+    );
+    // Decode
+    const decoded = Buffer.from(padded, "base64").toString();
+
+    // Extract score (should start with 's' followed by the number)
+    if (decoded.startsWith("s")) {
+      const score = parseInt(decoded.substring(1), 10);
+
+      // Validate the score
+      if (!isNaN(score) && score >= 0 && score <= 100) {
+        return score;
+      }
+    }
+    return null;
+  } catch (e) {
     return null;
   }
+}
 
-  return parsedScore;
+// Validate an encoded score
+function validateEncodedScore(encodedScore: string): number | null {
+  return decodeScore(encodedScore);
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
-  const score = validateScore(resolvedParams.score);
+  const score = validateEncodedScore(resolvedParams.score);
 
   if (score === null) {
     return {
@@ -53,7 +75,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ResultsPage({ params }: Props) {
   const resolvedParams = await params;
-  const score = validateScore(resolvedParams.score);
+  const score = validateEncodedScore(resolvedParams.score);
 
   if (score === null) {
     notFound();

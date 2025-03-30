@@ -21,6 +21,7 @@ import { trackEvents } from "@/app/lib/analytics";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { FiLink, FiRepeat } from "react-icons/fi";
 
 interface ResultsDisplayProps {
   score: number;
@@ -193,21 +194,64 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
     handleShare("instagram");
 
     if (isMobile) {
-      // Create a deep link to Instagram Stories
-      const instagramUrl = `instagram://story?source_application=nyupuritytest`;
+      // Create a properly formatted deep link to Instagram Stories
+      // Instagram requires specific parameters to open stories creation correctly
 
-      // Try to open Instagram
-      window.location.href = instagramUrl;
+      // Create content for the story
+      const storyText = `I scored ${score}/100 on the NYU Purity Test!\n${interpretation}`;
 
-      // Set a timeout to show a message if Instagram doesn't open
-      setTimeout(() => {
-        // If we're still on the same page, Instagram probably didn't open
-        alert("Please install Instagram app to share to Instagram Stories.");
-      }, 2500);
+      // Format hashtags
+      const hashtags = encodeURIComponent("NYUPurityTest,NYU,RicePurityTest");
+
+      // Select background color based on score
+      let bgColor = "%23c13584"; // Default Instagram purple in hex (encoded)
+      if (score >= 80) {
+        bgColor = "%23ffffff"; // White for high scores (Pure)
+      } else if (score >= 50) {
+        bgColor = "%23833AB4"; // Purple for medium scores
+      } else {
+        bgColor = "%23fd1d1d"; // Red for low scores
+      }
+
+      // Create story URL with proper parameters
+      // Note: The full feature set requires Instagram's sharing SDK, but this works on most devices
+      const instagramUrl = `instagram://story?source_application=nyupuritytest&background_color=${bgColor}&hashtags=${hashtags}`;
+
+      try {
+        // Try to open Instagram - we'll now use a different approach for iOS vs Android
+        if (isIOS) {
+          // iOS uses a different format than Android
+          window.location.href = instagramUrl;
+        } else {
+          // Android may need a different approach
+          const link = document.createElement("a");
+          link.href = instagramUrl;
+          link.target = "_blank";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+
+        // Set a timeout to show a message if Instagram doesn't open or returns quickly
+        setTimeout(() => {
+          // Check if we can detect if the app was successfully opened
+          // If the focus is still on our page after this timeout, probably Instagram wasn't opened
+          if (document.hasFocus()) {
+            alert(
+              "Instagram may not have opened correctly. Try sharing a screenshot instead or check that you have the Instagram app installed."
+            );
+          }
+        }, 2500);
+      } catch (e) {
+        // Fallback if there's any error
+        alert(
+          "There was an issue opening Instagram. Try taking a screenshot and sharing it to your story manually."
+        );
+      }
     } else {
       // On desktop, just show instructions
       alert(
-        "Open Instagram on your mobile device and share a screenshot to your Story."
+        "Instagram Stories sharing works best on mobile devices. Take a screenshot of your result to share it to your story."
       );
     }
   };
@@ -355,7 +399,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
           </motion.div>
 
           {/* Share Section */}
-          <motion.div className="mb-8" variants={itemVariants}>
+          <motion.div className="mb-4 lg:mb-8" variants={itemVariants}>
             <motion.h2
               className="inline-block mb-4 font-serif text-lg font-bold text-black border-b-2 border-black"
               variants={itemVariants}
@@ -453,22 +497,24 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
 
           {/* Action Buttons */}
           <motion.div
-            className="flex flex-col gap-3 justify-center md:flex-row"
+            className="flex flex-row gap-3 justify-center"
             variants={itemVariants}
           >
             <motion.button
               onClick={copyToClipboard}
-              className="flex items-center justify-center font-bold gap-2 px-4 py-2 text-sm text-[#57068C] bg-white border border-[#57068C] rounded-full hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-center font-bold gap-2 px-4 py-2 text-sm text-[#57068C] bg-white border border-[#57068C] rounded-full hover:bg-gray-50 transition-colors group"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span>📋</span> Copy Link
+              <FiLink className="w-4 h-4 transition-transform group-hover:rotate-12" />
+              Copy Link
             </motion.button>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href="/"
-                className="px-6 py-3 text-sm font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors inline-block"
+                className="flex items-center gap-2 px-6 py-3 text-sm font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors group"
               >
+                <FiRepeat className="w-4 h-4 transition-transform group-hover:rotate-180" />
                 Take Test Again
               </Link>
             </motion.div>
@@ -480,7 +526,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
           variants={itemVariants}
         >
           <p>
-            Statistics will be made public once 1000 people have taken the test.
+            Stats will be made public once 1500 submissions have been made.
             <br />
             Based on the Rice Purity Test. Made for NYU students, by NYU
             students.

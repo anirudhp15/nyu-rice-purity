@@ -44,7 +44,10 @@ export default function TestForm() {
 
       const data = await response.json();
       trackEvents.testCompleted(data.score);
-      router.push(`/results/${data.score}`);
+
+      // Use the encoded score if available, otherwise fall back to the raw score
+      const scoreParam = data.encodedScore || data.score;
+      router.push(`/results/${scoreParam}`);
     } catch (error) {
       console.error("Error submitting test:", error);
       alert("Error submitting test. Please try again.");
