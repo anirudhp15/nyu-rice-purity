@@ -94,7 +94,7 @@ export default function StatisticsDisplay() {
   return (
     <div className="p-4 mx-auto max-w-4xl bg-white md:p-8">
       <h1 className="mb-6 font-bold text-center text-heading">
-        NYU/NYC Purity Test Statistics
+        NYU Purity Test Statistics
       </h1>
 
       <div className="mb-sectionGap">

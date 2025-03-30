@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import connectToDatabase from "@/app/lib/mongodb";
 import Result from "@/app/models/Result";
 import AggregatedStats from "@/app/models/AggregatedStats";
+import { rateLimiter } from "@/app/lib/rateLimiter";
 
 // Helper function to get device type
 const getDeviceType = (userAgent: string): "mobile" | "tablet" | "desktop" => {
@@ -26,17 +27,52 @@ const calculateScore = (answers: boolean[]): number => {
   return 100 - trueCount;
 };
 
-export async function POST(request: Request) {
+// Sanitize and validate referrer URL
+const validateReferrer = (referrer: string): string => {
   try {
+    // Try to parse the URL to see if it's valid
+    new URL(referrer);
+    // Strip any potential XSS or injection attempts
+    return referrer.replace(/[<>]/g, "");
+  } catch {
+    // If it's not a valid URL, return 'direct'
+    return "direct";
+  }
+};
+
+export async function POST(request: NextRequest) {
+  try {
+    // Apply rate limiting - stricter limits for submission endpoint
+    // Allow only 5 submissions per minute per IP
+    const rateLimit = await rateLimiter(request, {
+      max: 5,
+      windowMs: 60 * 1000,
+    });
+    if (rateLimit) {
+      return rateLimit;
+    }
+
     console.log("API: Received form submission");
-    const body = await request.json();
+    const body = await request.json().catch(() => ({}));
     const { answers } = body;
 
-    // Validate input
-    if (!answers || !Array.isArray(answers) || answers.length !== 100) {
+    // Enhanced validation
+    if (!answers || !Array.isArray(answers)) {
+      console.error("API: Missing or invalid answers", { answers });
+      return NextResponse.json(
+        { error: "Missing or invalid answers" },
+        { status: 400 }
+      );
+    }
+
+    // Ensure answers are exactly 100 boolean values
+    if (
+      answers.length !== 100 ||
+      !answers.every((a) => typeof a === "boolean")
+    ) {
       console.error("API: Invalid answers format", { answers });
       return NextResponse.json(
-        { error: "Invalid answers format" },
+        { error: "Answers must be exactly 100 boolean values" },
         { status: 400 }
       );
     }
@@ -45,11 +81,14 @@ export async function POST(request: Request) {
     const score = calculateScore(answers);
     console.log(`API: Calculated score: ${score}`);
 
-    // Get device and referrer info
+    // Get device and referrer info with validation
     const userAgent = request.headers.get("user-agent") || "";
-    const referrer = request.headers.get("referer") || "direct";
+    const rawReferrer = request.headers.get("referer") || "direct";
+    const referrer = validateReferrer(rawReferrer);
     const deviceType = getDeviceType(userAgent);
-    const shareSource = body.shareSource || null;
+    const shareSource = body.shareSource
+      ? String(body.shareSource).slice(0, 100)
+      : null;
 
     try {
       // Connect to the database

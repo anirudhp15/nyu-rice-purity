@@ -56,7 +56,7 @@ export default function TestForm() {
         <div className="relative w-full max-w-[550px] h-[200px] mx-auto mt-8">
           <Image
             src="/images/bannerCropped.png"
-            alt="NYU/NYC Purity Test"
+            alt="NYU Purity Test"
             fill
             priority
             className="object-contain"

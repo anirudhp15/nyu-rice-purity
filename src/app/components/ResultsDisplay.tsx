@@ -46,7 +46,7 @@ const getScoreInterpretation = (score: number): string => {
 export default function ResultsDisplay({ score }: ResultsDisplayProps) {
   const interpretation = getScoreInterpretation(score);
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
-  const shareTitle = `I scored ${score}/100 on the NYU Purity Test! 🗽📚 #NYUPurityTest`;
+  const shareTitle = `I scored ${score}/100 on the NYU Purity Test! #NYUPurityTest`;
 
   const handleShare = (platform: string) => {
     trackEvents.resultShared(platform, score);
@@ -65,7 +65,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
         <div className="relative w-full max-w-[550px] h-[200px] mx-auto mt-8">
           <Image
             src="/images/bannerCropped.png"
-            alt="NYU/NYC Purity Test"
+            alt="NYU Purity Test"
             fill
             priority
             className="object-contain"
