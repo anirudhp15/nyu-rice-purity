@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import connectToDatabase from "@/app/lib/mongodb";
-import AggregatedStats from "@/app/models/AggregatedStats";
-import TimeBasedStats, { ITimeBasedStats } from "@/app/models/TimeBasedStats";
-import { purityQuestions } from "@/app/constants/questions";
+import connectToDatabase from "../../lib/mongodb";
+import AggregatedStats from "../../models/AggregatedStats";
+import TimeBasedStats, { ITimeBasedStats } from "../../models/TimeBasedStats";
+import { purityQuestions } from "../../constants/questions";
 
 export async function GET() {
   try {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import connectToDatabase from "@/app/lib/mongodb";
-import Result from "@/app/models/Result";
-import { rateLimiter } from "@/app/lib/rateLimiter";
+import connectToDatabase from "../../lib/mongodb";
+import Result from "../../models/Result";
+import { rateLimiter } from "../../lib/rateLimiter";
 
 export async function GET(request: NextRequest) {
   try {

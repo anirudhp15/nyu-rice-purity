@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import ResultsDisplay from "@/app/components/ResultsDisplay";
+import ResultsDisplay from "../../components/ResultsDisplay";
 import { Metadata } from "next";
 
 type Props = {

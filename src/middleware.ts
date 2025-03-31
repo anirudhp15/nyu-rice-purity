@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { rateLimiter } from "@/app/lib/rateLimiter";
+import { rateLimiter } from "./app/lib/rateLimiter";
 
 export async function middleware(request: NextRequest) {
   // Clone the request headers to add security headers

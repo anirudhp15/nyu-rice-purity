@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import connectToDatabase from "@/app/lib/mongodb";
-import Result from "@/app/models/Result";
-import AggregatedStats from "@/app/models/AggregatedStats";
-import { rateLimiter } from "@/app/lib/rateLimiter";
+import connectToDatabase from "../../lib/mongodb";
+import Result from "../../models/Result";
+import AggregatedStats from "../../models/AggregatedStats";
+import { rateLimiter } from "../../lib/rateLimiter";
 
 // Helper function to get device type
 const getDeviceType = (userAgent: string): "mobile" | "tablet" | "desktop" => {

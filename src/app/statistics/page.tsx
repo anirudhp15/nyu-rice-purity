@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import connectToDatabase from "@/app/lib/mongodb";
-import Result from "@/app/models/Result";
-import { purityQuestions } from "@/app/constants/questions";
+import connectToDatabase from "../lib/mongodb";
+import Result from "../models/Result";
+import { purityQuestions } from "../constants/questions";
 import Link from "next/link";
 import Image from "next/image";
 

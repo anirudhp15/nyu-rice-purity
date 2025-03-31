@@ -14,7 +14,7 @@ import {
   LineChart,
   Line,
 } from "recharts";
-import { trackEvents } from "@/app/lib/analytics";
+import { trackEvents } from "../lib/analytics";
 
 interface StatisticsData {
   overall: {

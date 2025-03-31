@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { purityQuestions } from "@/app/constants/questions";
-import { trackEvents } from "@/app/lib/analytics";
+import { purityQuestions } from "../constants/questions";
+import { trackEvents } from "../lib/analytics";
 import Image from "next/image";
 import { motion } from "framer-motion";
 

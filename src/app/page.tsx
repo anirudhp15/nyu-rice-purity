@@ -1,4 +1,4 @@
-import TestForm from "@/app/components/TestForm";
+import TestForm from "./components/TestForm";
 
 export default function Home() {
   return (

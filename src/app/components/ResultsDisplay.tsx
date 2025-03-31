@@ -17,7 +17,7 @@ import {
   TelegramIcon,
   RedditIcon,
 } from "react-share";
-import { trackEvents } from "@/app/lib/analytics";
+import { trackEvents } from "../lib/analytics";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
