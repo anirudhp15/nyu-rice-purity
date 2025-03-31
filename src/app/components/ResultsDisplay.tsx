@@ -21,7 +21,7 @@ import { trackEvents } from "@/app/lib/analytics";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiLink, FiRepeat } from "react-icons/fi";
+import { FiLink, FiRepeat, FiBarChart2 } from "react-icons/fi";
 import html2canvas from "html2canvas";
 
 interface ResultsDisplayProps {
@@ -167,6 +167,8 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
+  const [showStatsButton, setShowStatsButton] = useState(false);
+  const [totalSubmissions, setTotalSubmissions] = useState(0);
   const resultsRef = useRef<HTMLDivElement>(null);
   const interpretation = getScoreInterpretation(score);
   const shareUrl = "https://nyupuritytest.com";
@@ -174,7 +176,8 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
 
   useEffect(() => {
     setIsLoaded(true);
-    // Check if the user is on a mobile device and if it's iOS
+
+    // Check device type
     const checkDevice = () => {
       const userAgent =
         navigator.userAgent || navigator.vendor || (window as any).opera;
@@ -186,6 +189,33 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
       setIsIOS(isIOSDevice);
     };
     checkDevice();
+
+    // Check if stats button should be shown
+    const checkStatsVisibility = async () => {
+      // If in development mode, always show stats button
+      const isDevelopment = process.env.NEXT_PUBLIC_NODE_ENV === "development";
+
+      try {
+        // Get submission count from API
+        const res = await fetch("/api/submission-count");
+        if (res.ok) {
+          const data = await res.json();
+          setTotalSubmissions(data.count || 0);
+
+          // Show stats button if in development mode or if there are 1500+ submissions
+          setShowStatsButton(isDevelopment || data.count >= 1500);
+        } else {
+          // If API fails, only show in development
+          setShowStatsButton(isDevelopment);
+        }
+      } catch (error) {
+        console.error("Error checking stats visibility:", error);
+        // If error, only show in development
+        setShowStatsButton(isDevelopment);
+      }
+    };
+
+    checkStatsVisibility();
 
     // Dynamically import html2canvas only on client side
     import("html2canvas").catch((err) => {
@@ -638,6 +668,23 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
               <FiLink className="w-4 h-4 transition-transform group-hover:rotate-12" />
               Copy Link
             </motion.button>
+
+            {/* Statistics Button - conditionally rendered */}
+            {showStatsButton && (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link
+                  href="/statistics"
+                  className="flex items-center gap-2 px-4 py-2 whitespace-nowrap text-xs lg:text-sm font-bold text-[#57068C] bg-white border border-[#57068C] rounded-full hover:bg-gray-50 transition-colors group"
+                >
+                  <FiBarChart2 className="w-4 h-4 transition-transform group-hover:translate-y-[-2px]" />
+                  Statistics
+                </Link>
+              </motion.div>
+            )}
+
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href="/"
@@ -655,7 +702,19 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
           variants={itemVariants}
         >
           <p>
-            Stats will be made public once 1500 submissions have been made.
+            {totalSubmissions >= 1500 ? (
+              <Link
+                href="/statistics"
+                className="underline hover:text-[#57068C]"
+              >
+                View statistics from {totalSubmissions.toLocaleString()}{" "}
+                submissions
+              </Link>
+            ) : (
+              <>
+                Stats will be made public once 1500 submissions have been made.
+              </>
+            )}
             <br />
             Based on the Rice Purity Test. Made for NYU students, by NYU
             students.
