@@ -1,7 +1,18 @@
 {
   "framework": "nextjs",
-  "buildCommand": "next build",
+  "buildCommand": "npm install -D tailwindcss postcss autoprefixer && next build",
   "outputDirectory": ".next",
   "regions": ["sfo1"],
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_NODE_ENV": "production"
+    }
+  }
 }
