@@ -92,7 +92,6 @@ export const purityQuestions = [
   "Had sex while their roommate was home in another room?",
   "Made out with someone on the subway?",
   "Hooked up in a lecture hall after hours?",
-  "Did Molly at a party?",
   "Had a threesome (or more) in Third North?",
   "Snorted coke during finals week?",
   "Lied about your age to someone at a bar or club?",
@@ -104,6 +103,7 @@ export const purityQuestions = [
 
   // 81–100: Full Chaos & “Wait, What?”
   "Had group sex?",
+  "Pegged or got pegged?",
   "Been photographed or filmed during sex by yourself or others?",
   "Lost your virginity with someone from a dating app?",
   "Had sex in a bed not belonging to you or your partner?",
