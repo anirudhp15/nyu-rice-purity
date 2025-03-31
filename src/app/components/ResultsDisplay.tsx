@@ -481,7 +481,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
   return (
     <AnimatePresence>
       <motion.div
-        className="bg-[#fcf6e3] text-center max-w-3xl mx-auto shadow-md border-2 border-[#fcefc7] rounded-2xl"
+        className="bg-[#fcf6e3] text-center max-w-3xl mx-auto shadow-md border-2 border-[#ffe390] rounded-2xl"
         initial="hidden"
         animate={isLoaded ? "visible" : "hidden"}
         variants={containerVariants}

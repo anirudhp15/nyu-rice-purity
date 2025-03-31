@@ -89,7 +89,7 @@ export default function TestForm() {
 
   return (
     <motion.div
-      className="bg-[#fcf6e3] text-center max-w-3xl mx-auto shadow-md rounded-2xl border-2 border-[#fcefc7]"
+      className="bg-[#fcf6e3] text-center max-w-3xl mx-auto shadow-lg rounded-2xl border-2 border-[#f0d37d]"
       initial="hidden"
       animate={pageLoaded ? "visible" : "hidden"}
       variants={containerVariants}
