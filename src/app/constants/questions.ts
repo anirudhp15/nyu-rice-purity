@@ -67,6 +67,7 @@ export const purityQuestions = [
   "Blacked out at a dorm and woke up in the lounge?",
   "Had someone buy you drinks then ditched them?",
   "Crossed the Hudson or East River for a hookup?",
+  "Had drinks with your professor?",
   "Hooked up in a dorm common room?",
   "Hooked up in an NYU building's lounge?",
   "Hooked up in a laundry room?",
@@ -80,7 +81,6 @@ export const purityQuestions = [
   "Made out with someone from the Wrestling Team?",
   "Hooked up with someone you met on a dating app?",
   "Hooked up with someone during a club event?",
-  "Hooked up with someone from each NYU college?",
   "Ghosted someone you met on a dating app?",
   "Ended the night in the ambulance?",
   "Snuck into the Palladium pool while it was closed?",
@@ -110,5 +110,5 @@ export const purityQuestions = [
   "Used your roommate's clothes to clean up after a hookup?",
   "Paid or been paid for a sexual act?",
   "Hooked up with a TA in their office?",
-  "Had sex with a professor?",
+  "Slept with a professor?",
 ];
