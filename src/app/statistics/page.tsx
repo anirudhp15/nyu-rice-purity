@@ -338,7 +338,7 @@ export default async function StatisticsPage() {
             <h1 className="font-serif text-3xl font-bold mb-6 text-[#57068C]">
               Error Loading Statistics
             </h1>
-            <p className="mb-8 font-serif text-lg">
+            <p className="mb-8 font-serif text-lg text-black">
               There was an error loading the statistics. Please try again later.
             </p>
             <div className="mt-8">
