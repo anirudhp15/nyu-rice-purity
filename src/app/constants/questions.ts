@@ -40,7 +40,7 @@ export const purityQuestions = [
   "Jumped a turnstile and got caught?",
   "Kicked out of a building by Campus Safety?",
   "Snuck into the US Open?",
-  "Knew someone was AEPhi before they could tell you?",
+  "Knew someone was in Stern before they could tell you?",
   "Met someone from Gallatin who made you question the point of college?",
   "Been to a AEPhi party?",
   "Puked from shots at a pregame?",
