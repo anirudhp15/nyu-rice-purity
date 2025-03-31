@@ -45,4 +45,20 @@ export const trackEvents = {
   resultShared: (platform: string, score: number) =>
     trackEvent("result_shared", { platform, score }),
   statisticsViewed: () => trackEvent("statistics_viewed"),
+  formSubmitted: (score: number, deviceType: string) => {
+    trackEvent("form_submitted", {
+      score,
+      device_type: deviceType,
+    });
+  },
+  comparisonShared: (score: number) => {
+    trackEvent("comparison_shared", {
+      score,
+    });
+  },
+  demoResultsViewed: (score: number) => {
+    trackEvent("demo_results_viewed", {
+      score,
+    });
+  },
 };

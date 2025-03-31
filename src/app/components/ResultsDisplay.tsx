@@ -144,22 +144,41 @@ const IMessageIcon = ({ size, round }: { size: number; round: boolean }) => {
 
 const getScoreInterpretation = (score: number): string => {
   if (score >= 98) return "Get the fuck out of here you transplant.";
-  if (score >= 95) return "You're still a NYU virgin—congratulations!";
+  if (score >= 92) return "You're still a NYU virgin—go back to Jersey";
   if (score >= 90)
-    return "You're still spotless—NYC hasn't even scratched you.";
+    return "You're still spotless—NYC hasn't even shit on you yet.";
   if (score >= 80)
     return "Pretty tame for the city, you're holding it together.";
   if (score >= 70)
     return "You've dipped into NYC life, but nothing too wild yet.";
   if (score >= 60) return "You're picking up some city habits—watch your step.";
-  if (score >= 50) return "Halfway gone—NYU and NYC are testing your limits.";
+  if (score >= 50) return "Halfway gone—NYC is testing your limits.";
   if (score >= 40) return "You're in deep; the city's starting to own you.";
-  if (score >= 30)
-    return "You're way too comfortable with the chaos—slow down.";
+  if (score >= 30) return "You’re too chill with this madness—rehab’s calling.";
   if (score >= 20)
-    return "You've crossed some lines—hope you're still breathing.";
-  if (score >= 10) return "NYC's chewed you up—are you okay out there?";
-  return "You've gone full feral—someone check on you, seriously.";
+    return "You’ve done some dumb shit. Still got a pulse? Cool.";
+  if (score >= 10) return "NYC ate you alive. You good, fam? Text back.";
+  return "You've gone full feral—someone call your mom, seriously.";
+};
+
+// New function to get spicy comparison message
+const getComparisonMessage = (score: number): string => {
+  if (score >= 90) return "I’m too pure for this NYC shit. Judge me: ";
+  if (score >= 80)
+    return "Still clinging to my innocence here. Need wilder friends ASAP: ";
+  if (score >= 70)
+    return "Not as wild as I pretend to be. Expose your real score: ";
+  if (score >= 60)
+    return "My stories aren't as wild as yours. You got crazier stories or what?";
+  if (score >= 50)
+    return "Middle of the pack at NYU. Are you more innocent or corrupted? ";
+  if (score >= 40) return "NYC’s got me fucked up. Top my score, I dare you: ";
+  if (score >= 30)
+    return "My life’s a felony waiting to happen. Your turn, bitch: ";
+  if (score >= 20) return "Living my best chaotic NYC life. Can you top this? ";
+  if (score >= 10)
+    return "NYU turned me into a resume liability. Beat me if you can: ";
+  return "I've either done everything or am a pathological liar. Your move: ";
 };
 
 export default function ResultsDisplay({ score }: ResultsDisplayProps) {
@@ -169,10 +188,16 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
   const [isCapturing, setIsCapturing] = useState(false);
   const [showStatsButton, setShowStatsButton] = useState(false);
   const [totalSubmissions, setTotalSubmissions] = useState(0);
+  const [showCompareModal, setShowCompareModal] = useState(false);
+  const [timeSincePublic, setTimeSincePublic] = useState<string>(
+    "0 days, 0 hours, 0 minutes"
+  );
   const resultsRef = useRef<HTMLDivElement>(null);
   const interpretation = getScoreInterpretation(score);
+  const comparisonMessage = getComparisonMessage(score);
   const shareUrl = "https://nyupuritytest.com";
   const shareTitle = `I scored ${score}/100 on the NYU Purity Test! #NYUPurityTest`;
+  const spicyShareTitle = `${comparisonMessage}https://nyupuritytest.com #NYUPurityTest`;
 
   useEffect(() => {
     setIsLoaded(true);
@@ -189,6 +214,54 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
       setIsIOS(isIOSDevice);
     };
     checkDevice();
+
+    // Setup real-time counters
+    // 1. Submission count
+    const fetchSubmissionCount = async () => {
+      try {
+        const res = await fetch("/api/submission-count");
+        if (res.ok) {
+          const data = await res.json();
+          setTotalSubmissions(data.count || 0);
+        }
+      } catch (error) {
+        console.error("Error fetching submission count:", error);
+      }
+    };
+
+    // Initial fetch
+    fetchSubmissionCount();
+
+    // Set up polling for real-time updates (every 30 seconds)
+    const submissionCountInterval = setInterval(fetchSubmissionCount, 30000);
+
+    // 2. Time since site went public
+    const updateTimeSincePublic = () => {
+      // Site went public on March 31, 2025, 9:27 AM
+      const publicDate = new Date("2025-03-31T09:30:00");
+      const now = new Date();
+
+      // Calculate difference in milliseconds
+      const diffMs = now.getTime() - publicDate.getTime();
+
+      // Calculate days, hours, minutes
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      const diffHours = Math.floor(
+        (diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
+      const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+      // Format the time string
+      setTimeSincePublic(
+        `${diffDays} days, ${diffHours} hours, ${diffMinutes} minutes`
+      );
+    };
+
+    // Initial update
+    updateTimeSincePublic();
+
+    // Update every minute
+    const timeInterval = setInterval(updateTimeSincePublic, 60000);
 
     // Check if stats button should be shown
     const checkStatsVisibility = async () => {
@@ -221,6 +294,12 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
     import("html2canvas").catch((err) => {
       console.error("Failed to load html2canvas", err);
     });
+
+    // Clean up intervals on unmount
+    return () => {
+      clearInterval(submissionCountInterval);
+      clearInterval(timeInterval);
+    };
   }, []);
 
   const handleShare = (platform: string) => {
@@ -462,6 +541,22 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
     alert("Link copied to clipboard!");
   };
 
+  // Add a new function to copy the spicy comparison message
+  const copyComparisonToClipboard = () => {
+    const textToCopy = spicyShareTitle;
+
+    navigator.clipboard
+      .writeText(textToCopy)
+      .then(() => {
+        setShowCompareModal(false);
+        trackEvents.comparisonShared(score);
+        alert("Copied to clipboard! Now share it with your friends 🔥");
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+      });
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -552,7 +647,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
           </motion.div>
 
           {/* Share Section */}
-          <motion.div className="mb-4 lg:mb-8" variants={itemVariants}>
+          <motion.div className="mb-4" variants={itemVariants}>
             <motion.h2
               className="inline-block mb-4 font-serif text-lg font-bold text-black border-b-2 border-black"
               variants={itemVariants}
@@ -652,21 +747,54 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
                 </button>
               </motion.div>
             </motion.div>
+
+            {/* Add copy link button */}
+            <motion.div className="flex justify-center" variants={itemVariants}>
+              <button
+                onClick={copyToClipboard}
+                className="bg-white text-[#57068C] border border-[#57068C] rounded-full px-4 py-2 whitespace-nowrap font-bold text-xs lg:text-sm group hover:bg-gray-50 transition-colors"
+                aria-label="Copy link"
+              >
+                <FiLink className="inline-block mr-2 mb-1 w-4 h-4 transition-transform group-hover:rotate-12" />
+                Copy Link
+              </button>
+            </motion.div>
+          </motion.div>
+
+          <motion.div
+            className="flex justify-center mb-4"
+            variants={itemVariants}
+          >
+            <p className="text-xs lg:text-sm text-[#57068C]">or</p>
           </motion.div>
 
           {/* Action Buttons */}
           <motion.div
-            className="flex flex-row gap-2 justify-center"
+            className="flex flex-col gap-3 justify-center px-4 sm:flex-row"
             variants={itemVariants}
           >
             <motion.button
-              onClick={copyToClipboard}
+              onClick={() => setShowCompareModal(true)}
               className="flex items-center justify-center whitespace-nowrap font-bold gap-2 px-4 py-2 text-xs lg:text-sm text-[#57068C] bg-white border border-[#57068C] rounded-full hover:bg-gray-50 transition-colors group"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <FiLink className="w-4 h-4 transition-transform group-hover:rotate-12" />
-              Copy Link
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-4 h-4 transition-transform group-hover:rotate-12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              Share with Friends
             </motion.button>
 
             {/* Statistics Button - conditionally rendered */}
@@ -674,10 +802,11 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                className="w-full sm:w-auto"
               >
                 <Link
                   href="/statistics"
-                  className="flex items-center gap-2 px-4 py-2 whitespace-nowrap text-xs lg:text-sm font-bold text-[#57068C] bg-white border border-[#57068C] rounded-full hover:bg-gray-50 transition-colors group"
+                  className="flex items-center justify-center gap-2 px-4 py-2 whitespace-nowrap text-xs lg:text-sm font-bold text-[#57068C] bg-white border border-[#57068C] rounded-full hover:bg-gray-50 transition-colors group w-full"
                 >
                   <FiBarChart2 className="w-4 h-4 transition-transform group-hover:translate-y-[-2px]" />
                   Statistics
@@ -685,10 +814,14 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
               </motion.div>
             )}
 
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-full sm:w-auto"
+            >
               <Link
                 href="/"
-                className="flex items-center gap-2 px-4 py-2 whitespace-nowrap text-xs lg:text-sm font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors group"
+                className="flex items-center justify-center gap-2 px-4 py-2 whitespace-nowrap text-xs lg:text-sm font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors group w-full"
               >
                 <FiRepeat className="w-4 h-4 transition-transform group-hover:rotate-180" />
                 Take Test Again
@@ -711,9 +844,16 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
                 submissions
               </Link>
             ) : (
-              <>
-                Stats will be made public once 1500 submissions have been made.
-              </>
+              <span className="mb-2 text-sm">
+                <span className="font-semibold text-gray-800">
+                  Stats public after 1500 submissions (Current:{" "}
+                  {totalSubmissions.toLocaleString()}/1500)
+                </span>
+                <span className="ml-2 italic text-[#57068C]">
+                  {" "}
+                  <br className="block lg:hidden" />— live for {timeSincePublic}
+                </span>
+              </span>
             )}
             <br />
             Based on the Rice Purity Test. Made for NYU students, by NYU
@@ -721,6 +861,53 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
           </p>
         </motion.div>
       </motion.div>
+
+      {/* Compare Modal */}
+      <AnimatePresence>
+        {showCompareModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex fixed inset-0 z-50 justify-center items-center p-4 bg-black bg-opacity-50"
+            onClick={() => setShowCompareModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="p-6 w-full max-w-md bg-white rounded-xl shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-bold text-[#57068C] mb-4">
+                Challenge Your Friends!
+              </h3>
+              <p className="mb-4 text-gray-700">
+                Share this spicy message to see how your friends compare:
+              </p>
+              <div className="p-3 mb-4 text-left bg-gray-100 rounded-lg">
+                <p className="font-medium text-gray-800 break-words">
+                  {spicyShareTitle}
+                </p>
+              </div>
+              <div className="flex space-x-3">
+                <button
+                  onClick={copyComparisonToClipboard}
+                  className="flex-1 bg-[#57068C] text-white py-2 rounded-lg font-medium hover:bg-[#7A29A1] transition-colors"
+                >
+                  Copy Message
+                </button>
+                <button
+                  onClick={() => setShowCompareModal(false)}
+                  className="flex-1 py-2 font-medium text-gray-800 bg-gray-200 rounded-lg transition-colors hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </AnimatePresence>
   );
 }
