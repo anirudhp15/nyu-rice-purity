@@ -54,13 +54,6 @@ const generateUserSummary = (data: any): string => {
   if (data.relationship && data.relationship !== "not_provided") {
     if (data.relationship === "relationship")
       demographics.push("in a relationship");
-    else if (data.relationship === "single") demographics.push("single");
-    else if (data.relationship === "complicated")
-      demographics.push("it's complicated");
-    else if (data.relationship === "talking")
-      demographics.push("in talking stage");
-    else if (data.relationship === "situationship")
-      demographics.push("in a situationship");
     else if (data.relationship !== "prefer_not_to_say")
       demographics.push(data.relationship);
   }
@@ -71,42 +64,17 @@ const generateUserSummary = (data: any): string => {
     data.race !== "not_provided" &&
     data.race !== "prefer_not_to_say"
   ) {
-    if (data.race === "asian") demographics.push("Asian");
-    else if (data.race === "black") demographics.push("Black");
-    else if (data.race === "hispanic") demographics.push("Hispanic");
-    else if (data.race === "native") demographics.push("Native American");
-    else if (data.race === "pacific") demographics.push("Pacific Islander");
-    else if (data.race === "white") demographics.push("White");
-    else if (data.race === "multiracial") demographics.push("Multiracial");
-    else demographics.push(data.race);
+    demographics.push(data.race);
   }
 
   // Add gender if available
   if (data.gender && data.gender !== "not_provided") {
-    if (data.gender === "male") demographics.push("male");
-    else if (data.gender === "female") demographics.push("female");
-    else if (data.gender === "non-binary") demographics.push("non-binary");
-    else demographics.push(data.gender);
+    demographics.push(data.gender);
   }
 
   // Add school if available
   if (data.school && data.school !== "not_provided") {
-    const schoolMap: { [key: string]: string } = {
-      cas: "CAS",
-      tandon: "Tandon",
-      stern: "Stern",
-      gallatin: "Gallatin",
-      courant: "Courant",
-      tisch: "Tisch",
-      steinhardt: "Steinhardt",
-      sps: "SPS",
-      silver: "Silver",
-      law: "Law",
-      wagner: "Wagner",
-    };
-
-    const schoolName = schoolMap[data.school] || data.school;
-    demographics.push(`${schoolName} student`);
+    demographics.push(`${data.school} student`);
   }
 
   // Add year if available
@@ -277,16 +245,11 @@ export async function POST(request: NextRequest) {
       }
 
       const createdResult = await Result.create(resultData);
+      console.log("API: Result saved successfully", { id: createdResult._id });
 
-      // Log a human-readable summary of the user with a colorful border
-      console.log(
-        "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-      );
-      console.log(`🧑‍🎓 NEW SUBMISSION ${new Date().toLocaleTimeString()}`);
-      console.log(`${generateUserSummary(resultData)}`);
-      console.log(
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-      );
+      // Generate and log a human-readable description of the submission
+      const userSummary = generateUserSummary(resultData);
+      console.log("🧑‍🎓 NEW SUBMISSION:", userSummary);
 
       // Store the resultId in a cookie for 30 days
       const cookieStore = cookies();

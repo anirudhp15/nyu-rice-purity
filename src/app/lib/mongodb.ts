@@ -37,20 +37,9 @@ if (!global.mongoose) {
   global.mongoose = cached;
 }
 
-let isConnected = false;
-
 async function connectToDatabase() {
-  if (!MONGODB_URI) {
-    throw new Error(
-      "Please define the MONGODB_URI environment variable inside .env.local"
-    );
-  }
-
   if (cached.conn) {
-    if (!isConnected) {
-      console.log("🔄 Using existing MongoDB connection");
-      isConnected = true;
-    }
+    console.log("Using existing MongoDB connection");
     return cached.conn;
   }
 
@@ -62,22 +51,28 @@ async function connectToDatabase() {
       socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
     };
 
-    console.log("🔌 Connecting to MongoDB...");
+    console.log("Connecting to MongoDB...");
     cached.promise = mongoose
       .connect(MONGODB_URI, opts)
       .then((mongoose) => {
-        console.log("✅ Connected to MongoDB successfully");
+        console.log("MongoDB connected successfully!");
         return mongoose;
       })
       .catch((error) => {
         console.error("MongoDB connection error:", error);
         throw error;
       });
+  } else {
+    console.log("Using existing MongoDB connection promise");
   }
 
-  cached.conn = await cached.promise;
-  isConnected = true;
-  return cached.conn;
+  try {
+    cached.conn = await cached.promise;
+    return cached.conn;
+  } catch (error) {
+    cached.promise = null; // Reset the promise on error
+    throw error;
+  }
 }
 
 export default connectToDatabase;
