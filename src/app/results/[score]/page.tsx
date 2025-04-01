@@ -1,6 +1,10 @@
 import { notFound } from "next/navigation";
 import ResultsDisplay from "../../components/ResultsDisplay";
 import { Metadata } from "next";
+import Feedback from "../../components/Feedback";
+import { cookies } from "next/headers";
+import connectToDatabase from "../../lib/mongodb";
+import Result from "../../models/Result";
 
 type Props = {
   params: Promise<{ score: string }>;
@@ -81,9 +85,50 @@ export default async function ResultsPage({ params }: Props) {
     notFound();
   }
 
+  // Try to retrieve the result ID and demographics from cookies
+  const cookieStore = cookies();
+  const resultIdCookie = cookieStore.get("resultId");
+  let resultId = resultIdCookie ? resultIdCookie.value : undefined;
+  let demographics = undefined;
+  let deviceType = undefined;
+
+  // If resultId cookie exists, try to fetch the demographic information
+  if (resultId) {
+    try {
+      await connectToDatabase();
+      const result = await Result.findById(resultId);
+
+      if (result) {
+        // Extract demographic information
+        demographics = {
+          gender: result.gender || undefined,
+          school: result.school || undefined,
+          year: result.year || undefined,
+          living: result.living || undefined,
+        };
+        deviceType = result.deviceType;
+      } else {
+        // If result not found, clear the cookie
+        resultId = undefined;
+      }
+    } catch (error) {
+      console.error("Error fetching result:", error);
+      // If there's an error, don't pass the data
+      resultId = undefined;
+      demographics = undefined;
+      deviceType = undefined;
+    }
+  }
+
   return (
     <main>
       <ResultsDisplay score={score} />
+      <Feedback
+        score={score}
+        resultId={resultId}
+        demographics={demographics}
+        deviceType={deviceType}
+      />
     </main>
   );
 }

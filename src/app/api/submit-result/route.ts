@@ -3,6 +3,7 @@ import connectToDatabase from "../../lib/mongodb";
 import Result from "../../models/Result";
 import AggregatedStats from "../../models/AggregatedStats";
 import { rateLimiter } from "../../lib/rateLimiter";
+import { cookies } from "next/headers";
 
 // Helper function to get device type
 const getDeviceType = (userAgent: string): "mobile" | "tablet" | "desktop" => {
@@ -162,14 +163,28 @@ export async function POST(request: NextRequest) {
       const createdResult = await Result.create(resultData);
       console.log("API: Result saved successfully", { id: createdResult._id });
 
-      // Return the encoded score without trying to get aggregated stats
-      // This simplifies the process to focus on saving the individual result
-      return NextResponse.json({
+      // Store the resultId in a cookie for 30 days
+      const cookieStore = cookies();
+      cookieStore.set({
+        name: "resultId",
+        value: createdResult._id.toString(),
+        httpOnly: true,
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 60 * 60 * 24 * 30, // 30 days
+        sameSite: "strict",
+      });
+
+      // Create the response object
+      const response = NextResponse.json({
         score,
         encodedScore, // Include both for compatibility
+        resultId: createdResult._id.toString(),
         success: true,
         message: "Result saved successfully",
       });
+
+      return response;
     } catch (dbError: any) {
       console.error("API: MongoDB error:", dbError.message);
       // Return success even if DB fails - this ensures user experience isn't affected

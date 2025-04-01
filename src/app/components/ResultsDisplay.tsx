@@ -860,7 +860,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
 
         {/* Footer */}
         <motion.div
-          className="p-4 text-xs text-black bg-[#fcf6e3] border-t border-[#f0e9d2]"
+          className="p-4 text-xs text-black bg-[#fcf6e3] border-t border-[#f0e9d2] rounded-b-2xl"
           variants={itemVariants}
         >
           <p>
