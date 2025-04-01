@@ -846,12 +846,14 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
             ) : (
               <span className="mb-2 text-sm">
                 <span className="font-semibold text-gray-800">
-                  Stats public after 2025 submissions (Current:{" "}
+                  Stats public after 2025 submissions <br /> (Current:{" "}
                   {totalSubmissions.toLocaleString()}/2025)
                 </span>
                 <span className="ml-2 italic text-[#57068C]">
-                  — extended to include new demographic filters <br /> Live for{" "}
-                  {timeSincePublic}
+                  <span className="font-semibold text-gray-700">
+                    — extended to include new demographic filters <br />
+                  </span>
+                  Live for {timeSincePublic}
                 </span>
               </span>
             )}
@@ -891,7 +893,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
                 Challenge Your Friends!
               </h3>
               <p className="mb-4 text-gray-700">
-                Share this spicy message to see how your friends compare:
+                Share this message to see how your friends compare:
               </p>
               <div className="p-3 mb-4 text-left bg-gray-100 rounded-lg">
                 <p className="font-medium text-gray-800 break-words">

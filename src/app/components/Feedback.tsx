@@ -39,8 +39,8 @@ export default function Feedback({
     setError("");
 
     try {
-      // Send feedback through our API route with all user information
-      const response = await fetch("/api/send-feedback", {
+      // Save feedback to MongoDB
+      const response = await fetch("/api/save-feedback", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -49,23 +49,24 @@ export default function Feedback({
           email,
           feedback,
           score,
-          resultId, // Include the resultId if available
-          demographics, // Include demographic information if available
-          deviceType, // Include device type if available
+          resultId,
+          demographics,
+          deviceType,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to send feedback");
+        throw new Error(errorData.error || "Failed to save feedback");
       }
 
+      // Success! Show confirmation message
       setIsSubmitted(true);
       setFeedback("");
       setEmail("");
     } catch (err) {
-      console.error("Failed to send feedback:", err);
-      setError("Failed to send feedback. Please try again later.");
+      console.error("Failed to save feedback:", err);
+      setError("Failed to save feedback. Please try again later.");
     } finally {
       setIsSubmitting(false);
     }
@@ -77,16 +78,37 @@ export default function Feedback({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="p-4 bg-[#fcf6e3] rounded-xl shadow-sm border border-[#f0d37d]"
+        className="p-4 bg-[#fcf6e3] flex flex-col items-center rounded-xl shadow-sm border border-[#f0d37d]"
       >
-        <h3 className="mb-3 font-serif font-bold text-black text-md">
+        <h3 className="inline-block mb-4 font-serif text-lg font-bold text-black border-b-2 border-black">
           Share Your Feedback
         </h3>
 
         {isSubmitted ? (
-          <p className="font-serif text-sm text-[#57068C]">
-            Thank you for your feedback! We appreciate your input.
-          </p>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="py-6 text-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="mx-auto mb-4 w-16 h-16 text-green-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <p className="font-serif text-lg font-bold text-[#57068C]">
+              Feedback submitted!
+            </p>
+          </motion.div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
@@ -127,7 +149,7 @@ export default function Feedback({
         )}
 
         <p className="mt-4 w-full font-serif text-xs text-center text-gray-600">
-          Thanks for helping improve the NYUPT—we appreciate it!
+          We appreciate your help in improving the NYUPT.
         </p>
       </motion.div>
     </div>
