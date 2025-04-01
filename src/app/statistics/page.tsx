@@ -4,6 +4,28 @@ import Result from "../models/Result";
 import { purityQuestions } from "../constants/questions";
 import Link from "next/link";
 import Image from "next/image";
+import DemographicTables from "../../app/components/DemographicTables";
+
+// Define TypeScript interfaces for our statistics
+interface DemographicStat {
+  _id: string;
+  count: number;
+  avgScore: number;
+  scores?: number[];
+  medianScore?: number;
+}
+
+interface DemographicCategory {
+  total: number;
+  percentage: number;
+}
+
+interface DemographicStats {
+  gender: DemographicCategory;
+  school: DemographicCategory;
+  year: DemographicCategory;
+  living: DemographicCategory;
+}
 
 // Function to calculate basic statistics
 async function calculateStats() {
@@ -74,6 +96,224 @@ async function calculateStats() {
     { $group: { _id: "$deviceType", count: { $sum: 1 } } },
   ]);
 
+  // NEW: Calculate demographic statistics
+
+  // Get 'missing data' statistics
+  // Calculate submissions with missing gender data
+  const missingGenderCount = await Result.countDocuments({
+    $or: [{ gender: { $exists: false } }, { gender: null }, { gender: "" }],
+  });
+
+  // Calculate submissions with missing school data
+  const missingSchoolCount = await Result.countDocuments({
+    $or: [{ school: { $exists: false } }, { school: null }, { school: "" }],
+  });
+
+  // Calculate submissions with missing year data
+  const missingYearCount = await Result.countDocuments({
+    $or: [{ year: { $exists: false } }, { year: null }, { year: "" }],
+  });
+
+  // Calculate submissions with missing living situation data
+  const missingLivingCount = await Result.countDocuments({
+    $or: [{ living: { $exists: false } }, { living: null }, { living: "" }],
+  });
+
+  // 1. Gender statistics (including null stats)
+  const genderStats: DemographicStat[] = await Result.aggregate([
+    {
+      $group: {
+        _id: { $ifNull: ["$gender", "Not Provided"] },
+        count: { $sum: 1 },
+        avgScore: { $avg: "$score" },
+        scores: { $push: "$score" },
+      },
+    },
+    { $sort: { count: -1 } },
+  ]);
+
+  // Add missing gender data if not included in aggregate
+  if (
+    !genderStats.some((g) => g._id === "Not Provided") &&
+    missingGenderCount > 0
+  ) {
+    // Get average and median for missing gender
+    const missingGenderScores = await Result.find(
+      {
+        $or: [{ gender: { $exists: false } }, { gender: null }, { gender: "" }],
+      },
+      { score: 1, _id: 0 }
+    );
+
+    const scores = missingGenderScores.map((item) => item.score);
+    let medianScore = 0;
+    let avgScore = 0;
+
+    if (scores.length > 0) {
+      avgScore =
+        Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) /
+        100;
+      scores.sort((a, b) => a - b);
+      const mid = Math.floor(scores.length / 2);
+      medianScore =
+        scores.length % 2 === 0
+          ? (scores[mid - 1] + scores[mid]) / 2
+          : scores[mid];
+    }
+
+    genderStats.push({
+      _id: "Not Provided",
+      count: missingGenderCount,
+      avgScore,
+      medianScore,
+    });
+  }
+
+  // Calculate median for each gender
+  for (const stat of genderStats) {
+    if (stat.scores && stat.scores.length > 0) {
+      stat.scores.sort((a, b) => a - b);
+      const mid = Math.floor(stat.scores.length / 2);
+      stat.medianScore =
+        stat.scores.length % 2 === 0
+          ? (stat.scores[mid - 1] + stat.scores[mid]) / 2
+          : stat.scores[mid];
+      stat.avgScore = Math.round(stat.avgScore * 100) / 100;
+      delete stat.scores; // Remove the scores array to save memory
+    } else {
+      stat.medianScore = stat.medianScore || 0;
+    }
+  }
+
+  // 2. School statistics
+  const schoolStats: DemographicStat[] = await Result.aggregate([
+    {
+      $group: {
+        _id: { $ifNull: ["$school", "Not Provided"] },
+        count: { $sum: 1 },
+        avgScore: { $avg: "$score" },
+        scores: { $push: "$score" },
+      },
+    },
+    { $sort: { count: -1 } },
+  ]);
+
+  // Calculate median for each school
+  for (const stat of schoolStats) {
+    if (stat.scores && stat.scores.length > 0) {
+      stat.scores.sort((a, b) => a - b);
+      const mid = Math.floor(stat.scores.length / 2);
+      stat.medianScore =
+        stat.scores.length % 2 === 0
+          ? (stat.scores[mid - 1] + stat.scores[mid]) / 2
+          : stat.scores[mid];
+      stat.avgScore = Math.round(stat.avgScore * 100) / 100;
+      delete stat.scores;
+    } else {
+      stat.medianScore = 0;
+    }
+  }
+
+  // 3. Year statistics
+  const yearStats: DemographicStat[] = await Result.aggregate([
+    {
+      $group: {
+        _id: { $ifNull: ["$year", "Not Provided"] },
+        count: { $sum: 1 },
+        avgScore: { $avg: "$score" },
+        scores: { $push: "$score" },
+      },
+    },
+    { $sort: { count: -1 } },
+  ]);
+
+  // Calculate median for each year
+  for (const stat of yearStats) {
+    if (stat.scores && stat.scores.length > 0) {
+      stat.scores.sort((a, b) => a - b);
+      const mid = Math.floor(stat.scores.length / 2);
+      stat.medianScore =
+        stat.scores.length % 2 === 0
+          ? (stat.scores[mid - 1] + stat.scores[mid]) / 2
+          : stat.scores[mid];
+      stat.avgScore = Math.round(stat.avgScore * 100) / 100;
+      delete stat.scores;
+    } else {
+      stat.medianScore = 0;
+    }
+  }
+
+  // 4. Living situation statistics
+  const livingStats: DemographicStat[] = await Result.aggregate([
+    {
+      $group: {
+        _id: { $ifNull: ["$living", "Not Provided"] },
+        count: { $sum: 1 },
+        avgScore: { $avg: "$score" },
+        scores: { $push: "$score" },
+      },
+    },
+    { $sort: { count: -1 } },
+  ]);
+
+  // Calculate median for each living situation
+  for (const stat of livingStats) {
+    if (stat.scores && stat.scores.length > 0) {
+      stat.scores.sort((a, b) => a - b);
+      const mid = Math.floor(stat.scores.length / 2);
+      stat.medianScore =
+        stat.scores.length % 2 === 0
+          ? (stat.scores[mid - 1] + stat.scores[mid]) / 2
+          : stat.scores[mid];
+      stat.avgScore = Math.round(stat.avgScore * 100) / 100;
+      delete stat.scores;
+    } else {
+      stat.medianScore = 0;
+    }
+  }
+
+  // Calculate total demographic participation
+  const demographicStats: DemographicStats = {
+    gender: {
+      total: await Result.countDocuments({
+        gender: { $exists: true, $ne: "" },
+      }),
+      percentage: Math.round(
+        ((await Result.countDocuments({ gender: { $exists: true, $ne: "" } })) /
+          totalSubmissions) *
+          100
+      ),
+    },
+    school: {
+      total: await Result.countDocuments({
+        school: { $exists: true, $ne: "" },
+      }),
+      percentage: Math.round(
+        ((await Result.countDocuments({ school: { $exists: true, $ne: "" } })) /
+          totalSubmissions) *
+          100
+      ),
+    },
+    year: {
+      total: await Result.countDocuments({ year: { $exists: true, $ne: "" } }),
+      percentage: Math.round(
+        ((await Result.countDocuments({ year: { $exists: true, $ne: "" } })) /
+          totalSubmissions) *
+          100
+      ),
+    },
+    living: {
+      total: await Result.countDocuments({
+        living: { $exists: true, $ne: "" },
+      }),
+      percentage: Math.round(
+        ((await Result.countDocuments({ living: { $exists: true, $ne: "" } })) /
+          totalSubmissions) *
+          100
+      ),
+    },
+  };
+
   // Sort question stats by yes percentage (most common "yes" answers first)
   questionStats.sort((a, b) => b.yesPercentage - a.yesPercentage);
 
@@ -83,7 +323,19 @@ async function calculateStats() {
     medianScore,
     scoreDistribution,
     deviceStats,
-    questionStats: questionStats.slice(0, 10), // Only return top 10 for efficiency
+    questionStats: questionStats.slice(0, 50), // Only return top 50 for efficiency
+    // New demographic data
+    genderStats,
+    schoolStats,
+    yearStats,
+    livingStats,
+    demographicStats,
+    missingCounts: {
+      gender: missingGenderCount,
+      school: missingSchoolCount,
+      year: missingYearCount,
+      living: missingLivingCount,
+    },
   };
 }
 
@@ -94,8 +346,8 @@ export default async function StatisticsPage() {
   try {
     const stats = await calculateStats();
 
-    // In production, require at least 1500 submissions
-    if (isProduction && stats.totalSubmissions < 1500) {
+    // In production, require at least 2025 submissions
+    if (isProduction && stats.totalSubmissions < 2025) {
       return notFound();
     }
 
@@ -188,7 +440,7 @@ export default async function StatisticsPage() {
                       <th className="p-3 font-serif text-left">Percentage</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="text-[#57068C]">
                     {stats.scoreDistribution.map((range, index) => (
                       <tr
                         key={range.range}
@@ -230,7 +482,7 @@ export default async function StatisticsPage() {
                       <th className="p-3 font-serif text-left">Percentage</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="text-[#57068C]">
                     {stats.deviceStats.map((device, index) => (
                       <tr
                         key={device._id}
@@ -258,21 +510,23 @@ export default async function StatisticsPage() {
               </div>
             </section>
 
-            {/* Top 10 Most Common "Yes" Answers */}
+            {/* Top 50 Most Common "Yes" Answers  with a scrollable table */}
             <section className="mb-6 text-black">
               <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
-                Top 10 Most Common "Yes" Answers
+                Top 50 Most Common "Yes" Answers
               </h2>
               <div className="overflow-x-auto">
                 <table className="overflow-hidden w-full bg-white rounded-xl shadow-sm border-collapse">
                   <thead className="bg-[#57068C] text-white">
                     <tr>
                       <th className="p-3 font-serif text-left">Question</th>
-                      <th className="p-3 font-serif text-left">Yes %</th>
+                      <th className="p-3 font-serif text-left whitespace-nowrap">
+                        Yes %
+                      </th>
                       <th className="p-3 font-serif text-left">Count</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="text-[#57068C]">
                     {stats.questionStats.map((question, index) => (
                       <tr
                         key={question.questionId}
@@ -295,6 +549,15 @@ export default async function StatisticsPage() {
                 </table>
               </div>
             </section>
+
+            {/* Pass the demographic stats to the client component for toggle functionality */}
+            <DemographicTables
+              genderStats={stats.genderStats}
+              schoolStats={stats.schoolStats}
+              yearStats={stats.yearStats}
+              livingStats={stats.livingStats}
+              demographicStats={stats.demographicStats}
+            />
 
             {/* Take Test Again Button */}
             <div className="mt-10">

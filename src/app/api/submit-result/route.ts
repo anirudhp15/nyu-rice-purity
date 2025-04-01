@@ -132,12 +132,32 @@ export async function POST(request: NextRequest) {
         living: living === "" ? "not_provided" : living || null,
       };
 
+      // EXTRA VALIDATION: Ensure all fields exist by adding explicit null values if anything is undefined
+      // This handles edge cases where fields might be missing somehow
+      if (!resultData.hasOwnProperty("gender")) resultData.gender = null;
+      if (!resultData.hasOwnProperty("school")) resultData.school = null;
+      if (!resultData.hasOwnProperty("year")) resultData.year = null;
+      if (!resultData.hasOwnProperty("living")) resultData.living = null;
+
       console.log("API: Data being saved:", {
         gender: resultData.gender,
         school: resultData.school,
         year: resultData.year,
         living: resultData.living,
       });
+
+      // Add additional validation to log any irregularities
+      const fieldsToCheck = ["gender", "school", "year", "living"];
+      const missingFields = fieldsToCheck.filter(
+        (field) => !resultData.hasOwnProperty(field)
+      );
+      if (missingFields.length > 0) {
+        console.error(
+          `API WARNING: Some demographic fields are missing: ${missingFields.join(
+            ", "
+          )}`
+        );
+      }
 
       const createdResult = await Result.create(resultData);
       console.log("API: Result saved successfully", { id: createdResult._id });

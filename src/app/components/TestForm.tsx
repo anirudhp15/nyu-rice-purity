@@ -37,19 +37,24 @@ export default function TestForm() {
     setLoading(true);
 
     try {
+      // Ensure all demographic fields are defined, even if empty
+      const submissionData = {
+        answers,
+        gender: gender === "other" ? customGender : gender,
+        school: school === "other" ? customSchool : school,
+        year,
+        living,
+      };
+
+      // Log the submission data for debugging
+      console.log("Submitting form data:", submissionData);
+
       const response = await fetch("/api/submit-result", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        // Include the new granular info in the submission
-        body: JSON.stringify({
-          answers,
-          gender: gender === "other" ? customGender : gender,
-          school: school === "other" ? customSchool : school,
-          year,
-          living,
-        }),
+        body: JSON.stringify(submissionData),
       });
 
       if (!response.ok) {
@@ -358,7 +363,13 @@ export default function TestForm() {
           Completing this test might leave you safe-riding back from the ER at
           6am with no ID.
         </p>
-        <p className="mt-1 font-serif">
+      </motion.div>
+      {/* Footer */}
+      <motion.div
+        className="p-4 text-xs text-black bg-[#fcf6e3] border-t border-[#f0e9d2]"
+        variants={itemVariants}
+      >
+        <p>
           Based on the Rice Purity Test. Made for NYU students, by NYU students.
         </p>
       </motion.div>

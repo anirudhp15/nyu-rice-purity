@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       {
         count,
         showStats:
-          count >= 1500 || process.env.NEXT_PUBLIC_NODE_ENV === "development",
+          count >= 2025 || process.env.NEXT_PUBLIC_NODE_ENV === "development",
       },
       {
         status: 200,

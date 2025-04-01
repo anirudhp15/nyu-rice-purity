@@ -275,8 +275,8 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
           const data = await res.json();
           setTotalSubmissions(data.count || 0);
 
-          // Show stats button if in development mode or if there are 1500+ submissions
-          setShowStatsButton(isDevelopment || data.count >= 1500);
+          // Show stats button if in development mode or if there are 2025+ submissions
+          setShowStatsButton(isDevelopment || data.count >= 2025);
         } else {
           // If API fails, only show in development
           setShowStatsButton(isDevelopment);
@@ -846,16 +846,24 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
             ) : (
               <span className="mb-2 text-sm">
                 <span className="font-semibold text-gray-800">
-                  Stats public after 1500 submissions (Current:{" "}
-                  {totalSubmissions.toLocaleString()}/1500)
+                  Stats public after 2025 submissions (Current:{" "}
+                  {totalSubmissions.toLocaleString()}/2025)
                 </span>
                 <span className="ml-2 italic text-[#57068C]">
-                  {" "}
-                  <br className="block lg:hidden" />— live for {timeSincePublic}
+                  — extended to include new demographic filters <br /> Live for{" "}
+                  {timeSincePublic}
                 </span>
               </span>
             )}
-            <br />
+          </p>
+        </motion.div>
+
+        {/* Footer */}
+        <motion.div
+          className="p-4 text-xs text-black bg-[#fcf6e3] border-t border-[#f0e9d2]"
+          variants={itemVariants}
+        >
+          <p>
             Based on the Rice Purity Test. Made for NYU students, by NYU
             students.
           </p>
