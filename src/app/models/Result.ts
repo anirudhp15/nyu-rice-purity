@@ -11,6 +11,8 @@ export interface ITestResult extends Document {
   school?: string; // Optional school
   year?: string; // Optional year/class
   living?: string; // Optional living situation
+  race?: string; // Optional race/ethnicity
+  relationship?: string; // Optional relationship status
 }
 
 const ResultSchema: Schema = new Schema({
@@ -35,6 +37,8 @@ const ResultSchema: Schema = new Schema({
   school: { type: String },
   year: { type: String },
   living: { type: String },
+  race: { type: String },
+  relationship: { type: String },
 });
 
 // Only create the model if it doesn't already exist

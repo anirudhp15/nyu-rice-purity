@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
 
     console.log("API: Received form submission");
     const body = await request.json().catch(() => ({}));
-    const { answers, gender, school, year, living } = body;
+    const { answers, gender, school, year, living, race, relationship } = body;
 
     // Log the optional fields for debugging
     console.log("API: Optional fields received:", {
@@ -71,6 +71,8 @@ export async function POST(request: NextRequest) {
       school: school || "not provided",
       year: year || "not provided",
       living: living || "not provided",
+      race: race || "not provided",
+      relationship: relationship || "not provided",
     });
 
     // Enhanced validation
@@ -131,6 +133,9 @@ export async function POST(request: NextRequest) {
         school: school === "" ? "not_provided" : school || null,
         year: year === "" ? "not_provided" : year || null,
         living: living === "" ? "not_provided" : living || null,
+        race: race === "" ? "not_provided" : race || null,
+        relationship:
+          relationship === "" ? "not_provided" : relationship || null,
       };
 
       // EXTRA VALIDATION: Ensure all fields exist by adding explicit null values if anything is undefined
@@ -139,16 +144,28 @@ export async function POST(request: NextRequest) {
       if (!resultData.hasOwnProperty("school")) resultData.school = null;
       if (!resultData.hasOwnProperty("year")) resultData.year = null;
       if (!resultData.hasOwnProperty("living")) resultData.living = null;
+      if (!resultData.hasOwnProperty("race")) resultData.race = null;
+      if (!resultData.hasOwnProperty("relationship"))
+        resultData.relationship = null;
 
       console.log("API: Data being saved:", {
         gender: resultData.gender,
         school: resultData.school,
         year: resultData.year,
         living: resultData.living,
+        race: resultData.race,
+        relationship: resultData.relationship,
       });
 
       // Add additional validation to log any irregularities
-      const fieldsToCheck = ["gender", "school", "year", "living"];
+      const fieldsToCheck = [
+        "gender",
+        "school",
+        "year",
+        "living",
+        "race",
+        "relationship",
+      ];
       const missingFields = fieldsToCheck.filter(
         (field) => !resultData.hasOwnProperty(field)
       );

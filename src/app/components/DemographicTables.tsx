@@ -20,6 +20,8 @@ interface DemographicStats {
   school: DemographicCategory;
   year: DemographicCategory;
   living: DemographicCategory;
+  race: DemographicCategory;
+  relationship: DemographicCategory;
 }
 
 interface DemographicTablesProps {
@@ -27,6 +29,8 @@ interface DemographicTablesProps {
   schoolStats: DemographicStat[];
   yearStats: DemographicStat[];
   livingStats: DemographicStat[];
+  raceStats: DemographicStat[];
+  relationshipStats: DemographicStat[];
   demographicStats: DemographicStats;
 }
 
@@ -35,6 +39,8 @@ export default function DemographicTables({
   schoolStats,
   yearStats,
   livingStats,
+  raceStats,
+  relationshipStats,
   demographicStats,
 }: DemographicTablesProps) {
   // State to track whether to show "Not Provided" data
@@ -57,6 +63,8 @@ export default function DemographicTables({
   const filteredSchoolStats = filterStats(schoolStats);
   const filteredYearStats = filterStats(yearStats);
   const filteredLivingStats = filterStats(livingStats);
+  const filteredRaceStats = filterStats(raceStats);
+  const filteredRelationshipStats = filterStats(relationshipStats);
 
   // Helper function to format display names for demographic categories
   const formatDisplayName = (name: string | null | undefined): string => {
@@ -80,6 +88,8 @@ export default function DemographicTables({
   const filteredSchoolTotal = getFilteredTotal(filteredSchoolStats);
   const filteredYearTotal = getFilteredTotal(filteredYearStats);
   const filteredLivingTotal = getFilteredTotal(filteredLivingStats);
+  const filteredRaceTotal = getFilteredTotal(filteredRaceStats);
+  const filteredRelationshipTotal = getFilteredTotal(filteredRelationshipStats);
 
   return (
     <>
@@ -281,6 +291,102 @@ export default function DemographicTables({
                   </td>
                   <td className="p-2 font-serif border-t border-[#f0e9d2]">
                     {living.medianScore}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Score by Race/Ethnicity */}
+      <section className="mb-10 text-xs text-black lg:text-base">
+        <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
+          Scores by Race/Ethnicity
+        </h2>
+        <div className="overflow-x-auto">
+          <table className="overflow-hidden w-full bg-white rounded-xl shadow-sm border-collapse">
+            <thead className="bg-[#57068C] text-white">
+              <tr>
+                <th className="p-2 font-serif text-left">Race/Ethnicity</th>
+                <th className="p-2 font-serif text-left">Count</th>
+                <th className="p-2 font-serif text-left">%</th>
+                <th className="p-2 font-serif text-left">Average Score</th>
+                <th className="p-2 font-serif text-left">Median Score</th>
+              </tr>
+            </thead>
+            <tbody className="text-[#57068C]">
+              {filteredRaceStats.map((race, index) => (
+                <tr
+                  key={race._id}
+                  className={index % 2 === 0 ? "bg-white" : "bg-[#f8f5e6]"}
+                >
+                  <td className="p-2 capitalize font-serif border-t border-[#f0e9d2]">
+                    {formatDisplayName(race._id)}
+                  </td>
+                  <td className="p-2 font-serif border-t border-[#f0e9d2]">
+                    {race.count.toLocaleString()}
+                  </td>
+                  <td className="p-2 font-serif border-t border-[#f0e9d2]">
+                    {filteredRaceTotal > 0
+                      ? `${Math.round((race.count / filteredRaceTotal) * 100)}%`
+                      : "0%"}
+                  </td>
+                  <td className="p-2 font-serif border-t border-[#f0e9d2]">
+                    {race.avgScore}
+                  </td>
+                  <td className="p-2 font-serif border-t border-[#f0e9d2]">
+                    {race.medianScore}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Score by Relationship Status */}
+      <section className="mb-10 text-xs text-black lg:text-base">
+        <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
+          Scores by Relationship Status
+        </h2>
+        <div className="overflow-x-auto">
+          <table className="overflow-hidden w-full bg-white rounded-xl shadow-sm border-collapse">
+            <thead className="bg-[#57068C] text-white">
+              <tr>
+                <th className="p-2 font-serif text-left">
+                  Relationship Status
+                </th>
+                <th className="p-2 font-serif text-left">Count</th>
+                <th className="p-2 font-serif text-left">%</th>
+                <th className="p-2 font-serif text-left">Average Score</th>
+                <th className="p-2 font-serif text-left">Median Score</th>
+              </tr>
+            </thead>
+            <tbody className="text-[#57068C]">
+              {filteredRelationshipStats.map((relationship, index) => (
+                <tr
+                  key={relationship._id}
+                  className={index % 2 === 0 ? "bg-white" : "bg-[#f8f5e6]"}
+                >
+                  <td className="p-2 capitalize font-serif border-t border-[#f0e9d2]">
+                    {formatDisplayName(relationship._id)}
+                  </td>
+                  <td className="p-2 font-serif border-t border-[#f0e9d2]">
+                    {relationship.count.toLocaleString()}
+                  </td>
+                  <td className="p-2 font-serif border-t border-[#f0e9d2]">
+                    {filteredRelationshipTotal > 0
+                      ? `${Math.round(
+                          (relationship.count / filteredRelationshipTotal) * 100
+                        )}%`
+                      : "0%"}
+                  </td>
+                  <td className="p-2 font-serif border-t border-[#f0e9d2]">
+                    {relationship.avgScore}
+                  </td>
+                  <td className="p-2 font-serif border-t border-[#f0e9d2]">
+                    {relationship.medianScore}
                   </td>
                 </tr>
               ))}

@@ -42,6 +42,14 @@ const FeedbackSchema = new Schema(
         type: String,
         required: false,
       },
+      race: {
+        type: String,
+        required: false,
+      },
+      relationship: {
+        type: String,
+        required: false,
+      },
     },
     // Device information
     deviceType: {

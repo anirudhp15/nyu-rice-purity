@@ -25,6 +25,8 @@ interface DemographicStats {
   school: DemographicCategory;
   year: DemographicCategory;
   living: DemographicCategory;
+  race: DemographicCategory;
+  relationship: DemographicCategory;
 }
 
 // Function to calculate basic statistics
@@ -117,6 +119,20 @@ async function calculateStats() {
   // Calculate submissions with missing living situation data
   const missingLivingCount = await Result.countDocuments({
     $or: [{ living: { $exists: false } }, { living: null }, { living: "" }],
+  });
+
+  // Calculate submissions with missing race data
+  const missingRaceCount = await Result.countDocuments({
+    $or: [{ race: { $exists: false } }, { race: null }, { race: "" }],
+  });
+
+  // Calculate submissions with missing relationship status data
+  const missingRelationshipCount = await Result.countDocuments({
+    $or: [
+      { relationship: { $exists: false } },
+      { relationship: null },
+      { relationship: "" },
+    ],
   });
 
   // 1. Gender statistics (including null stats)
@@ -272,6 +288,64 @@ async function calculateStats() {
     }
   }
 
+  // 5. Race/Ethnicity statistics
+  const raceStats: DemographicStat[] = await Result.aggregate([
+    {
+      $group: {
+        _id: { $ifNull: ["$race", "Not Provided"] },
+        count: { $sum: 1 },
+        avgScore: { $avg: "$score" },
+        scores: { $push: "$score" },
+      },
+    },
+    { $sort: { count: -1 } },
+  ]);
+
+  // Calculate median for each race/ethnicity
+  for (const stat of raceStats) {
+    if (stat.scores && stat.scores.length > 0) {
+      stat.scores.sort((a, b) => a - b);
+      const mid = Math.floor(stat.scores.length / 2);
+      stat.medianScore =
+        stat.scores.length % 2 === 0
+          ? (stat.scores[mid - 1] + stat.scores[mid]) / 2
+          : stat.scores[mid];
+      stat.avgScore = Math.round(stat.avgScore * 100) / 100;
+      delete stat.scores;
+    } else {
+      stat.medianScore = 0;
+    }
+  }
+
+  // 6. Relationship status statistics
+  const relationshipStats: DemographicStat[] = await Result.aggregate([
+    {
+      $group: {
+        _id: { $ifNull: ["$relationship", "Not Provided"] },
+        count: { $sum: 1 },
+        avgScore: { $avg: "$score" },
+        scores: { $push: "$score" },
+      },
+    },
+    { $sort: { count: -1 } },
+  ]);
+
+  // Calculate median for each relationship status
+  for (const stat of relationshipStats) {
+    if (stat.scores && stat.scores.length > 0) {
+      stat.scores.sort((a, b) => a - b);
+      const mid = Math.floor(stat.scores.length / 2);
+      stat.medianScore =
+        stat.scores.length % 2 === 0
+          ? (stat.scores[mid - 1] + stat.scores[mid]) / 2
+          : stat.scores[mid];
+      stat.avgScore = Math.round(stat.avgScore * 100) / 100;
+      delete stat.scores;
+    } else {
+      stat.medianScore = 0;
+    }
+  }
+
   // Calculate total demographic participation
   const demographicStats: DemographicStats = {
     gender: {
@@ -312,6 +386,28 @@ async function calculateStats() {
           100
       ),
     },
+    race: {
+      total: await Result.countDocuments({
+        race: { $exists: true, $ne: "" },
+      }),
+      percentage: Math.round(
+        ((await Result.countDocuments({ race: { $exists: true, $ne: "" } })) /
+          totalSubmissions) *
+          100
+      ),
+    },
+    relationship: {
+      total: await Result.countDocuments({
+        relationship: { $exists: true, $ne: "" },
+      }),
+      percentage: Math.round(
+        ((await Result.countDocuments({
+          relationship: { $exists: true, $ne: "" },
+        })) /
+          totalSubmissions) *
+          100
+      ),
+    },
   };
 
   // Sort question stats by yes percentage (most common "yes" answers first)
@@ -324,17 +420,21 @@ async function calculateStats() {
     scoreDistribution,
     deviceStats,
     questionStats: questionStats.slice(0, 50), // Only return top 50 for efficiency
-    // New demographic data
+    // Demographic data
     genderStats,
     schoolStats,
     yearStats,
     livingStats,
+    raceStats,
+    relationshipStats,
     demographicStats,
     missingCounts: {
       gender: missingGenderCount,
       school: missingSchoolCount,
       year: missingYearCount,
       living: missingLivingCount,
+      race: missingRaceCount,
+      relationship: missingRelationshipCount,
     },
   };
 }
@@ -556,6 +656,8 @@ export default async function StatisticsPage() {
               schoolStats={stats.schoolStats}
               yearStats={stats.yearStats}
               livingStats={stats.livingStats}
+              raceStats={stats.raceStats}
+              relationshipStats={stats.relationshipStats}
               demographicStats={stats.demographicStats}
             />
 

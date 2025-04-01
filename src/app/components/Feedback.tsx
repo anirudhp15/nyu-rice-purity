@@ -11,6 +11,8 @@ interface FeedbackProps {
     school?: string;
     year?: string;
     living?: string;
+    race?: string;
+    relationship?: string;
   };
   deviceType?: string;
 }

@@ -19,6 +19,9 @@ export default function TestForm() {
   const [customSchool, setCustomSchool] = useState("");
   const [year, setYear] = useState("");
   const [living, setLiving] = useState("");
+  const [race, setRace] = useState("");
+  const [customRace, setCustomRace] = useState("");
+  const [relationship, setRelationship] = useState("");
 
   useEffect(() => {
     trackEvents.testStarted();
@@ -44,6 +47,8 @@ export default function TestForm() {
         school: school === "other" ? customSchool : school,
         year,
         living,
+        race: race === "other" ? customRace : race,
+        relationship,
       };
 
       // Log the submission data for debugging
@@ -146,7 +151,7 @@ export default function TestForm() {
 
         {/* Updated dropdown section for user info */}
         <motion.div className="p-4 mb-8" variants={containerVariants}>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
             {/* Gender dropdown */}
             <motion.div className="flex flex-col" variants={itemVariants}>
               <label className="mb-2 font-serif text-sm text-black">
@@ -258,7 +263,7 @@ export default function TestForm() {
             {/* Living situation - New field */}
             <motion.div className="flex flex-col" variants={itemVariants}>
               <label className="mb-2 font-serif text-sm text-black">
-                Living Situation (optional):
+                Living (optional):
               </label>
               <select
                 value={living}
@@ -271,6 +276,67 @@ export default function TestForm() {
                 <option value="commuter">Commuter</option>
                 <option value="family">With family</option>
                 <option value="other">Other</option>
+              </select>
+            </motion.div>
+
+            <motion.div className="flex flex-col" variants={itemVariants}>
+              <label className="mb-2 font-serif text-sm text-black">
+                Race/Ethnicity (optional):
+              </label>
+              <select
+                value={race}
+                onChange={(e) => {
+                  setRace(e.target.value);
+                  if (e.target.value !== "other") {
+                    setCustomRace("");
+                  }
+                }}
+                className="p-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black hover:bg-[#f8f8f8] focus:outline-none focus:ring-2 focus:ring-[#f0d37d] transition-colors"
+              >
+                <option value="">Select race/ethnicity</option>
+                <option value="asian">Asian</option>
+                <option value="black">Black or African American</option>
+                <option value="hispanic">Hispanic or Latino</option>
+                <option value="native">American Indian or Alaska Native</option>
+                <option value="pacific">
+                  Native Hawaiian or Pacific Islander
+                </option>
+                <option value="white">White</option>
+                <option value="multiracial">Multiracial</option>
+                <option value="other">Other</option>
+                <option value="prefer_not_to_say">Prefer not to say</option>
+              </select>
+              {race === "other" && (
+                <motion.input
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  type="text"
+                  placeholder="Please specify"
+                  value={customRace}
+                  onChange={(e) => setCustomRace(e.target.value)}
+                  className="p-2 mt-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black focus:outline-none focus:ring-2 focus:ring-[#f0d37d]"
+                />
+              )}
+            </motion.div>
+
+            {/* Relationship status dropdown - New field */}
+            <motion.div className="flex flex-col" variants={itemVariants}>
+              <label className="mb-2 font-serif text-sm text-black">
+                Relationship (optional):
+              </label>
+              <select
+                value={relationship}
+                onChange={(e) => setRelationship(e.target.value)}
+                className="p-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black hover:bg-[#f8f8f8] focus:outline-none focus:ring-2 focus:ring-[#f0d37d] transition-colors"
+              >
+                <option value="">Select status</option>
+                <option value="single">Single</option>
+                <option value="relationship">In a relationship</option>
+                <option value="complicated">It's complicated</option>
+                <option value="talking">Talking stage</option>
+                <option value="situationship">Situationship</option>
+                <option value="prefer_not_to_say">Prefer not to say</option>
               </select>
             </motion.div>
           </div>
