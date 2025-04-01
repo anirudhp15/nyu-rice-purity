@@ -78,7 +78,7 @@ export default function Feedback({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="p-4 bg-[#fcf6e3] flex flex-col items-center rounded-xl shadow-sm border border-[#f0d37d]"
+        className="p-4 bg-[#fcf6e3] w-full flex flex-col items-center rounded-xl shadow-sm border border-[#f0d37d]"
       >
         <h3 className="inline-block mb-4 font-serif text-lg font-bold text-black border-b-2 border-black">
           Share Your Feedback
@@ -110,7 +110,7 @@ export default function Feedback({
             </p>
           </motion.div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-3 w-full">
             <div>
               <textarea
                 placeholder="What did you think of the test? Any suggestions for improvement?"
