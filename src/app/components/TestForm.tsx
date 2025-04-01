@@ -12,6 +12,13 @@ export default function TestForm() {
   const [answers, setAnswers] = useState<boolean[]>(new Array(100).fill(false));
   const [loading, setLoading] = useState<boolean>(false);
   const [pageLoaded, setPageLoaded] = useState<boolean>(false);
+  // New state for granular user info:
+  const [gender, setGender] = useState("");
+  const [customGender, setCustomGender] = useState("");
+  const [school, setSchool] = useState("");
+  const [customSchool, setCustomSchool] = useState("");
+  const [year, setYear] = useState("");
+  const [living, setLiving] = useState("");
 
   useEffect(() => {
     trackEvents.testStarted();
@@ -35,7 +42,14 @@ export default function TestForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ answers }),
+        // Include the new granular info in the submission
+        body: JSON.stringify({
+          answers,
+          gender: gender === "other" ? customGender : gender,
+          school: school === "other" ? customSchool : school,
+          year,
+          living,
+        }),
       });
 
       if (!response.ok) {
@@ -44,8 +58,6 @@ export default function TestForm() {
 
       const data = await response.json();
       trackEvents.testCompleted(data.score);
-
-      // Use the encoded score if available, otherwise fall back to the raw score
       const scoreParam = data.encodedScore || data.score;
       router.push(`/results/${scoreParam}`);
     } catch (error) {
@@ -126,6 +138,138 @@ export default function TestForm() {
           Check every item you've done. Your purity score will be calculated at
           the end.
         </motion.p>
+
+        {/* Updated dropdown section for user info */}
+        <motion.div className="p-4 mb-8" variants={containerVariants}>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {/* Gender dropdown */}
+            <motion.div className="flex flex-col" variants={itemVariants}>
+              <label className="mb-2 font-serif text-sm text-black">
+                Gender (optional):
+              </label>
+              <select
+                value={gender}
+                onChange={(e) => {
+                  setGender(e.target.value);
+                  if (e.target.value !== "other") {
+                    setCustomGender("");
+                  }
+                }}
+                className="p-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black hover:bg-[#f8f8f8] focus:outline-none focus:ring-2 focus:ring-[#f0d37d] transition-colors"
+              >
+                <option value="">Select gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="non-binary">Non-binary</option>
+                <option value="other">Other</option>
+              </select>
+              {gender === "other" && (
+                <motion.input
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  type="text"
+                  placeholder="Specify gender"
+                  value={customGender}
+                  onChange={(e) => setCustomGender(e.target.value)}
+                  className="p-2 mt-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black focus:outline-none focus:ring-2 focus:ring-[#f0d37d]"
+                />
+              )}
+            </motion.div>
+
+            {/* School dropdown */}
+            <motion.div className="flex flex-col" variants={itemVariants}>
+              <label className="mb-2 font-serif text-sm text-black">
+                School (optional):
+              </label>
+              <select
+                value={school}
+                onChange={(e) => {
+                  setSchool(e.target.value);
+                  if (e.target.value !== "other") {
+                    setCustomSchool("");
+                  }
+                }}
+                className="p-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black hover:bg-[#f8f8f8] focus:outline-none focus:ring-2 focus:ring-[#f0d37d] transition-colors"
+              >
+                <option value="">Select a school</option>
+                <option value="cas">CAS</option>
+                <option value="tandon">Tandon</option>
+                <option value="stern">Stern</option>
+                <option value="gallatin">Gallatin</option>
+                <option value="courant">Courant</option>
+                <option value="tisch">Tisch</option>
+                <option value="steinhardt">Steinhardt</option>
+                <option value="sps">SPS</option>
+                <option value="silver">Silver</option>
+                <option value="law">Law</option>
+                <option value="wagner">Wagner</option>
+                <option value="other">Other</option>
+              </select>
+              {school === "other" && (
+                <motion.input
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  type="text"
+                  placeholder="Specify school"
+                  value={customSchool}
+                  onChange={(e) => setCustomSchool(e.target.value)}
+                  className="p-2 mt-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black focus:outline-none focus:ring-2 focus:ring-[#f0d37d]"
+                />
+              )}
+              {school === "courant" && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="mt-2 font-serif text-sm text-red-500"
+                >
+                  (Courant is technically not an official fucking school, but
+                  okay)
+                </motion.p>
+              )}
+            </motion.div>
+
+            {/* Year dropdown - New field */}
+            <motion.div className="flex flex-col" variants={itemVariants}>
+              <label className="mb-2 font-serif text-sm text-black">
+                Year (optional):
+              </label>
+              <select
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+                className="p-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black hover:bg-[#f8f8f8] focus:outline-none focus:ring-2 focus:ring-[#f0d37d] transition-colors"
+              >
+                <option value="">Select your year</option>
+                <option value="freshman">Freshman</option>
+                <option value="sophomore">Sophomore</option>
+                <option value="junior">Junior</option>
+                <option value="senior">Senior</option>
+                <option value="graduate">Graduate</option>
+                <option value="alumni">Alumni</option>
+              </select>
+            </motion.div>
+
+            {/* Living situation - New field */}
+            <motion.div className="flex flex-col" variants={itemVariants}>
+              <label className="mb-2 font-serif text-sm text-black">
+                Living Situation (optional):
+              </label>
+              <select
+                value={living}
+                onChange={(e) => setLiving(e.target.value)}
+                className="p-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black hover:bg-[#f8f8f8] focus:outline-none focus:ring-2 focus:ring-[#f0d37d] transition-colors"
+              >
+                <option value="">Select your living situation</option>
+                <option value="dorm">Dorm</option>
+                <option value="offcampus">Off-campus apartment</option>
+                <option value="commuter">Commuter</option>
+                <option value="family">With family</option>
+                <option value="other">Other</option>
+              </select>
+            </motion.div>
+          </div>
+        </motion.div>
 
         <motion.p
           className="pl-2 mb-4 max-w-lg font-serif text-sm text-left text-black"

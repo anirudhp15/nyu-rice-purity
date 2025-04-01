@@ -7,6 +7,10 @@ export interface ITestResult extends Document {
   deviceType: string; // "mobile" | "tablet" | "desktop"
   referrer: string; // Where the user came from
   shareSource?: string; // If they came from a share
+  gender?: string; // Optional gender
+  school?: string; // Optional school
+  year?: string; // Optional year/class
+  living?: string; // Optional living situation
 }
 
 const ResultSchema: Schema = new Schema({
@@ -27,6 +31,10 @@ const ResultSchema: Schema = new Schema({
   },
   referrer: { type: String, required: true },
   shareSource: { type: String },
+  gender: { type: String },
+  school: { type: String },
+  year: { type: String },
+  living: { type: String },
 });
 
 // Only create the model if it doesn't already exist

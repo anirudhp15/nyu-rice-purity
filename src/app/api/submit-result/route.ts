@@ -62,7 +62,15 @@ export async function POST(request: NextRequest) {
 
     console.log("API: Received form submission");
     const body = await request.json().catch(() => ({}));
-    const { answers } = body;
+    const { answers, gender, school, year, living } = body;
+
+    // Log the optional fields for debugging
+    console.log("API: Optional fields received:", {
+      gender: gender || "not provided",
+      school: school || "not provided",
+      year: year || "not provided",
+      living: living || "not provided",
+    });
 
     // Enhanced validation
     if (!answers || !Array.isArray(answers)) {
@@ -108,13 +116,30 @@ export async function POST(request: NextRequest) {
 
       // Save the result
       console.log("API: Saving result to MongoDB");
-      const createdResult = await Result.create({
+
+      // When a field is empty string, we'll store "not_provided" to distinguish from older null entries
+      const resultData = {
         score,
         answers,
         deviceType,
         referrer,
         shareSource,
+        // For new submissions, empty strings become "not_provided" (user chose not to answer)
+        // This distinguishes them from old null entries (user didn't have the option)
+        gender: gender === "" ? "not_provided" : gender || null,
+        school: school === "" ? "not_provided" : school || null,
+        year: year === "" ? "not_provided" : year || null,
+        living: living === "" ? "not_provided" : living || null,
+      };
+
+      console.log("API: Data being saved:", {
+        gender: resultData.gender,
+        school: resultData.school,
+        year: resultData.year,
+        living: resultData.living,
       });
+
+      const createdResult = await Result.create(resultData);
       console.log("API: Result saved successfully", { id: createdResult._id });
 
       // Return the encoded score without trying to get aggregated stats
