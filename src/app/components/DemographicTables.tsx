@@ -119,7 +119,7 @@ export default function DemographicTables({
             <thead className="bg-[#57068C] text-white">
               <tr>
                 <th className="p-2 font-serif text-left">Gender</th>
-                <th className="p-2 font-serif text-left">Count</th>
+                {/* <th className="p-2 font-serif text-left">Count</th> */}
                 <th className="p-2 font-serif text-left">%</th>
                 <th className="p-2 font-serif text-left">Average Score</th>
                 <th className="p-2 font-serif text-left">Median Score</th>
@@ -134,9 +134,9 @@ export default function DemographicTables({
                   <td className="p-2 capitalize font-serif border-t border-[#f0e9d2]">
                     {formatDisplayName(gender._id)}
                   </td>
-                  <td className="p-2 font-serif border-t border-[#f0e9d2]">
+                  {/* <td className="p-2 font-serif border-t border-[#f0e9d2]">
                     {gender.count.toLocaleString()}
-                  </td>
+                  </td> */}
                   <td className="p-2 font-serif border-t border-[#f0e9d2]">
                     {filteredGenderTotal > 0
                       ? `${Math.round(
@@ -167,7 +167,7 @@ export default function DemographicTables({
             <thead className="bg-[#57068C] text-white">
               <tr>
                 <th className="p-2 font-serif text-left">School</th>
-                <th className="p-2 font-serif text-left">Count</th>
+                {/* <th className="p-2 font-serif text-left">Count</th> */}
                 <th className="p-2 font-serif text-left">%</th>
                 <th className="p-2 font-serif text-left">Average Score</th>
                 <th className="p-2 font-serif text-left">Median Score</th>
@@ -182,9 +182,9 @@ export default function DemographicTables({
                   <td className="p-2 capitalize font-serif border-t border-[#f0e9d2]">
                     {formatDisplayName(school._id)}
                   </td>
-                  <td className="p-2 font-serif border-t border-[#f0e9d2]">
+                  {/* <td className="p-2 font-serif border-t border-[#f0e9d2]">
                     {school.count.toLocaleString()}
-                  </td>
+                  </td> */}
                   <td className="p-2 font-serif border-t border-[#f0e9d2]">
                     {filteredSchoolTotal > 0
                       ? `${Math.round(
@@ -215,7 +215,7 @@ export default function DemographicTables({
             <thead className="bg-[#57068C] text-white">
               <tr>
                 <th className="p-2 font-serif text-left">Year</th>
-                <th className="p-2 font-serif text-left">Count</th>
+                {/* <th className="p-2 font-serif text-left">Count</th> */}
                 <th className="p-2 font-serif text-left">%</th>
                 <th className="p-2 font-serif text-left">Average Score</th>
                 <th className="p-2 font-serif text-left">Median Score</th>
@@ -230,9 +230,9 @@ export default function DemographicTables({
                   <td className="p-2 capitalize font-serif border-t border-[#f0e9d2]">
                     {formatDisplayName(year._id)}
                   </td>
-                  <td className="p-2 font-serif border-t border-[#f0e9d2]">
+                  {/* <td className="p-2 font-serif border-t border-[#f0e9d2]">
                     {year.count.toLocaleString()}
-                  </td>
+                  </td> */}
                   <td className="p-2 font-serif border-t border-[#f0e9d2]">
                     {filteredYearTotal > 0
                       ? `${Math.round((year.count / filteredYearTotal) * 100)}%`
@@ -261,7 +261,7 @@ export default function DemographicTables({
             <thead className="bg-[#57068C] text-white">
               <tr>
                 <th className="p-2 font-serif text-left">Living Situation</th>
-                <th className="p-2 font-serif text-left">Count</th>
+                {/* <th className="p-2 font-serif text-left">Count</th> */}
                 <th className="p-2 font-serif text-left">%</th>
                 <th className="p-2 font-serif text-left">Average Score</th>
                 <th className="p-2 font-serif text-left">Median Score</th>
@@ -276,9 +276,9 @@ export default function DemographicTables({
                   <td className="p-2 capitalize font-serif border-t border-[#f0e9d2]">
                     {formatDisplayName(living._id)}
                   </td>
-                  <td className="p-2 font-serif border-t border-[#f0e9d2]">
+                  {/* <td className="p-2 font-serif border-t border-[#f0e9d2]">
                     {living.count.toLocaleString()}
-                  </td>
+                  </td> */}
                   <td className="p-2 font-serif border-t border-[#f0e9d2]">
                     {filteredLivingTotal > 0
                       ? `${Math.round(
@@ -309,7 +309,7 @@ export default function DemographicTables({
             <thead className="bg-[#57068C] text-white">
               <tr>
                 <th className="p-2 font-serif text-left">Race/Ethnicity</th>
-                <th className="p-2 font-serif text-left">Count</th>
+                {/* <th className="p-2 font-serif text-left">Count</th> */}
                 <th className="p-2 font-serif text-left">%</th>
                 <th className="p-2 font-serif text-left">Average Score</th>
                 <th className="p-2 font-serif text-left">Median Score</th>
@@ -324,9 +324,9 @@ export default function DemographicTables({
                   <td className="p-2 capitalize font-serif border-t border-[#f0e9d2]">
                     {formatDisplayName(race._id)}
                   </td>
-                  <td className="p-2 font-serif border-t border-[#f0e9d2]">
+                  {/* <td className="p-2 font-serif border-t border-[#f0e9d2]">
                     {race.count.toLocaleString()}
-                  </td>
+                  </td> */}
                   <td className="p-2 font-serif border-t border-[#f0e9d2]">
                     {filteredRaceTotal > 0
                       ? `${Math.round((race.count / filteredRaceTotal) * 100)}%`
@@ -357,7 +357,7 @@ export default function DemographicTables({
                 <th className="p-2 font-serif text-left">
                   Relationship Status
                 </th>
-                <th className="p-2 font-serif text-left">Count</th>
+                {/* <th className="p-2 font-serif text-left">Count</th> */}
                 <th className="p-2 font-serif text-left">%</th>
                 <th className="p-2 font-serif text-left">Average Score</th>
                 <th className="p-2 font-serif text-left">Median Score</th>
@@ -372,9 +372,9 @@ export default function DemographicTables({
                   <td className="p-2 capitalize font-serif border-t border-[#f0e9d2]">
                     {formatDisplayName(relationship._id)}
                   </td>
-                  <td className="p-2 font-serif border-t border-[#f0e9d2]">
+                  {/* <td className="p-2 font-serif border-t border-[#f0e9d2]">
                     {relationship.count.toLocaleString()}
-                  </td>
+                  </td> */}
                   <td className="p-2 font-serif border-t border-[#f0e9d2]">
                     {filteredRelationshipTotal > 0
                       ? `${Math.round(

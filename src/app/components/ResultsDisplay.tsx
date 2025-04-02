@@ -835,7 +835,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
           variants={itemVariants}
         >
           <p>
-            {totalSubmissions >= 1500 ? (
+            {totalSubmissions >= 2025 ? (
               <Link
                 href="/statistics"
                 className="underline hover:text-[#57068C]"
