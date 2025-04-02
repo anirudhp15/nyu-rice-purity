@@ -149,199 +149,6 @@ export default function TestForm() {
           the end.
         </motion.p>
 
-        {/* Updated dropdown section for user info */}
-        <motion.div className="p-4 mb-8" variants={containerVariants}>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-            {/* Gender dropdown */}
-            <motion.div className="flex flex-col" variants={itemVariants}>
-              <label className="mb-2 font-serif text-sm text-black">
-                Gender (optional):
-              </label>
-              <select
-                value={gender}
-                onChange={(e) => {
-                  setGender(e.target.value);
-                  if (e.target.value !== "other") {
-                    setCustomGender("");
-                  }
-                }}
-                className="p-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black hover:bg-[#f8f8f8] focus:outline-none focus:ring-2 focus:ring-[#f0d37d] transition-colors"
-              >
-                <option value="">Select gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="non-binary">Non-binary</option>
-                <option value="other">Other</option>
-              </select>
-              {gender === "other" && (
-                <motion.input
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  type="text"
-                  placeholder="Specify gender"
-                  value={customGender}
-                  onChange={(e) => setCustomGender(e.target.value)}
-                  className="p-2 mt-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black focus:outline-none focus:ring-2 focus:ring-[#f0d37d]"
-                />
-              )}
-            </motion.div>
-
-            {/* School dropdown */}
-            <motion.div className="flex flex-col" variants={itemVariants}>
-              <label className="mb-2 font-serif text-sm text-black">
-                School (optional):
-              </label>
-              <select
-                value={school}
-                onChange={(e) => {
-                  setSchool(e.target.value);
-                  if (e.target.value !== "other") {
-                    setCustomSchool("");
-                  }
-                }}
-                className="p-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black hover:bg-[#f8f8f8] focus:outline-none focus:ring-2 focus:ring-[#f0d37d] transition-colors"
-              >
-                <option value="">Select a school</option>
-                <option value="cas">CAS</option>
-                <option value="tandon">Tandon</option>
-                <option value="stern">Stern</option>
-                <option value="gallatin">Gallatin</option>
-                <option value="courant">Courant</option>
-                <option value="tisch">Tisch</option>
-                <option value="steinhardt">Steinhardt</option>
-                <option value="sps">SPS</option>
-                <option value="silver">Silver</option>
-                <option value="law">Law</option>
-                <option value="wagner">Wagner</option>
-                <option value="other">Other</option>
-              </select>
-              {school === "other" && (
-                <motion.input
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  type="text"
-                  placeholder="Specify school"
-                  value={customSchool}
-                  onChange={(e) => setCustomSchool(e.target.value)}
-                  className="p-2 mt-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black focus:outline-none focus:ring-2 focus:ring-[#f0d37d]"
-                />
-              )}
-              {school === "courant" && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="mt-2 font-serif text-sm text-red-500"
-                >
-                  (Courant is technically not an official fucking school, but
-                  okay)
-                </motion.p>
-              )}
-            </motion.div>
-
-            {/* Year dropdown - New field */}
-            <motion.div className="flex flex-col" variants={itemVariants}>
-              <label className="mb-2 font-serif text-sm text-black">
-                Year (optional):
-              </label>
-              <select
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-                className="p-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black hover:bg-[#f8f8f8] focus:outline-none focus:ring-2 focus:ring-[#f0d37d] transition-colors"
-              >
-                <option value="">Select your year</option>
-                <option value="freshman">Freshman</option>
-                <option value="sophomore">Sophomore</option>
-                <option value="junior">Junior</option>
-                <option value="senior">Senior</option>
-                <option value="graduate">Graduate</option>
-                <option value="alumni">Alumni</option>
-              </select>
-            </motion.div>
-
-            {/* Living situation - New field */}
-            <motion.div className="flex flex-col" variants={itemVariants}>
-              <label className="mb-2 font-serif text-sm text-black">
-                Living (optional):
-              </label>
-              <select
-                value={living}
-                onChange={(e) => setLiving(e.target.value)}
-                className="p-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black hover:bg-[#f8f8f8] focus:outline-none focus:ring-2 focus:ring-[#f0d37d] transition-colors"
-              >
-                <option value="">Select your living situation</option>
-                <option value="dorm">Dorm</option>
-                <option value="offcampus">Off-campus apartment</option>
-                <option value="commuter">Commuter</option>
-                <option value="family">With family</option>
-                <option value="other">Other</option>
-              </select>
-            </motion.div>
-
-            <motion.div className="flex flex-col" variants={itemVariants}>
-              <label className="mb-2 font-serif text-sm text-black">
-                Race/Ethnicity (optional):
-              </label>
-              <select
-                value={race}
-                onChange={(e) => {
-                  setRace(e.target.value);
-                  if (e.target.value !== "other") {
-                    setCustomRace("");
-                  }
-                }}
-                className="p-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black hover:bg-[#f8f8f8] focus:outline-none focus:ring-2 focus:ring-[#f0d37d] transition-colors"
-              >
-                <option value="">Select race/ethnicity</option>
-                <option value="asian">Asian</option>
-                <option value="black">Black or African American</option>
-                <option value="hispanic">Hispanic or Latino</option>
-                <option value="native">American Indian or Alaska Native</option>
-                <option value="pacific">
-                  Native Hawaiian or Pacific Islander
-                </option>
-                <option value="white">White</option>
-                <option value="multiracial">Multiracial</option>
-                <option value="other">Other</option>
-                <option value="prefer_not_to_say">Prefer not to say</option>
-              </select>
-              {race === "other" && (
-                <motion.input
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  type="text"
-                  placeholder="Please specify"
-                  value={customRace}
-                  onChange={(e) => setCustomRace(e.target.value)}
-                  className="p-2 mt-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black focus:outline-none focus:ring-2 focus:ring-[#f0d37d]"
-                />
-              )}
-            </motion.div>
-
-            {/* Relationship status dropdown - New field */}
-            <motion.div className="flex flex-col" variants={itemVariants}>
-              <label className="mb-2 font-serif text-sm text-black">
-                Relationship (optional):
-              </label>
-              <select
-                value={relationship}
-                onChange={(e) => setRelationship(e.target.value)}
-                className="p-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black hover:bg-[#f8f8f8] focus:outline-none focus:ring-2 focus:ring-[#f0d37d] transition-colors"
-              >
-                <option value="">Select status</option>
-                <option value="single">Single</option>
-                <option value="relationship">In a relationship</option>
-                <option value="complicated">It's complicated</option>
-                <option value="talking">Talking stage</option>
-                <option value="situationship">Situationship</option>
-                <option value="prefer_not_to_say">Prefer not to say</option>
-              </select>
-            </motion.div>
-          </div>
-        </motion.div>
-
         <motion.p
           className="pl-2 mb-4 max-w-lg font-serif text-sm text-left text-black"
           variants={itemVariants}
@@ -351,7 +158,7 @@ export default function TestForm() {
 
         <form onSubmit={handleSubmit} className="text-left">
           <motion.div
-            className="grid grid-cols-1 gap-1 mb-8"
+            className="grid grid-cols-1 gap-1 mb-4"
             variants={itemVariants}
           >
             {purityQuestions.map((question, index) => (
@@ -378,6 +185,201 @@ export default function TestForm() {
                 </label>
               </motion.div>
             ))}
+          </motion.div>
+
+          {/* Updated dropdown section for user info */}
+          <motion.div className="p-4 mb-16" variants={containerVariants}>
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+              {/* Gender dropdown */}
+              <motion.div className="flex flex-col" variants={itemVariants}>
+                <label className="mb-2 font-serif text-sm text-black">
+                  Gender (optional):
+                </label>
+                <select
+                  value={gender}
+                  onChange={(e) => {
+                    setGender(e.target.value);
+                    if (e.target.value !== "other") {
+                      setCustomGender("");
+                    }
+                  }}
+                  className="p-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black hover:bg-[#f8f8f8] focus:outline-none focus:ring-2 focus:ring-[#f0d37d] transition-colors"
+                >
+                  <option value="">Select gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="non-binary">Non-binary</option>
+                  <option value="other">Other</option>
+                </select>
+                {gender === "other" && (
+                  <motion.input
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    type="text"
+                    placeholder="Specify gender"
+                    value={customGender}
+                    onChange={(e) => setCustomGender(e.target.value)}
+                    className="p-2 mt-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black focus:outline-none focus:ring-2 focus:ring-[#f0d37d]"
+                  />
+                )}
+              </motion.div>
+
+              {/* School dropdown */}
+              <motion.div className="flex flex-col" variants={itemVariants}>
+                <label className="mb-2 font-serif text-sm text-black">
+                  School (optional):
+                </label>
+                <select
+                  value={school}
+                  onChange={(e) => {
+                    setSchool(e.target.value);
+                    if (e.target.value !== "other") {
+                      setCustomSchool("");
+                    }
+                  }}
+                  className="p-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black hover:bg-[#f8f8f8] focus:outline-none focus:ring-2 focus:ring-[#f0d37d] transition-colors"
+                >
+                  <option value="">Select a school</option>
+                  <option value="cas">CAS</option>
+                  <option value="tandon">Tandon</option>
+                  <option value="stern">Stern</option>
+                  <option value="gallatin">Gallatin</option>
+                  <option value="courant">Courant</option>
+                  <option value="tisch">Tisch</option>
+                  <option value="steinhardt">Steinhardt</option>
+                  <option value="sps">SPS</option>
+                  <option value="silver">Silver</option>
+                  <option value="law">Law</option>
+                  <option value="wagner">Wagner</option>
+                  <option value="other">Other</option>
+                </select>
+                {school === "other" && (
+                  <motion.input
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    type="text"
+                    placeholder="Specify school"
+                    value={customSchool}
+                    onChange={(e) => setCustomSchool(e.target.value)}
+                    className="p-2 mt-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black focus:outline-none focus:ring-2 focus:ring-[#f0d37d]"
+                  />
+                )}
+                {school === "courant" && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="mt-2 font-serif text-sm text-red-500"
+                  >
+                    (Courant is technically not an official fucking school, but
+                    okay)
+                  </motion.p>
+                )}
+              </motion.div>
+
+              {/* Year dropdown - New field */}
+              <motion.div className="flex flex-col" variants={itemVariants}>
+                <label className="mb-2 font-serif text-sm text-black">
+                  Year (optional):
+                </label>
+                <select
+                  value={year}
+                  onChange={(e) => setYear(e.target.value)}
+                  className="p-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black hover:bg-[#f8f8f8] focus:outline-none focus:ring-2 focus:ring-[#f0d37d] transition-colors"
+                >
+                  <option value="">Select your year</option>
+                  <option value="freshman">Freshman</option>
+                  <option value="sophomore">Sophomore</option>
+                  <option value="junior">Junior</option>
+                  <option value="senior">Senior</option>
+                  <option value="graduate">Graduate</option>
+                  <option value="alumni">Alumni</option>
+                </select>
+              </motion.div>
+
+              {/* Living situation - New field */}
+              <motion.div className="flex flex-col" variants={itemVariants}>
+                <label className="mb-2 font-serif text-sm text-black">
+                  Living (optional):
+                </label>
+                <select
+                  value={living}
+                  onChange={(e) => setLiving(e.target.value)}
+                  className="p-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black hover:bg-[#f8f8f8] focus:outline-none focus:ring-2 focus:ring-[#f0d37d] transition-colors"
+                >
+                  <option value="">Select your living situation</option>
+                  <option value="dorm">Dorm</option>
+                  <option value="offcampus">Off-campus apartment</option>
+                  <option value="commuter">Commuter</option>
+                  <option value="family">With family</option>
+                  <option value="other">Other</option>
+                </select>
+              </motion.div>
+
+              <motion.div className="flex flex-col" variants={itemVariants}>
+                <label className="mb-2 font-serif text-sm text-black">
+                  Race/Ethnicity (optional):
+                </label>
+                <select
+                  value={race}
+                  onChange={(e) => {
+                    setRace(e.target.value);
+                    if (e.target.value !== "other") {
+                      setCustomRace("");
+                    }
+                  }}
+                  className="p-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black hover:bg-[#f8f8f8] focus:outline-none focus:ring-2 focus:ring-[#f0d37d] transition-colors"
+                >
+                  <option value="">Select race/ethnicity</option>
+                  <option value="asian">Asian</option>
+                  <option value="black">Black or African American</option>
+                  <option value="hispanic">Hispanic or Latino</option>
+                  <option value="native">
+                    American Indian or Alaska Native
+                  </option>
+                  <option value="pacific">
+                    Native Hawaiian or Pacific Islander
+                  </option>
+                  <option value="white">White</option>
+                  <option value="multiracial">Multiracial</option>
+                  <option value="other">Other</option>
+                  <option value="prefer_not_to_say">Prefer not to say</option>
+                </select>
+                {race === "other" && (
+                  <motion.input
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    type="text"
+                    placeholder="Please specify"
+                    value={customRace}
+                    onChange={(e) => setCustomRace(e.target.value)}
+                    className="p-2 mt-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black focus:outline-none focus:ring-2 focus:ring-[#f0d37d]"
+                  />
+                )}
+              </motion.div>
+
+              {/* Relationship status dropdown - New field */}
+              <motion.div className="flex flex-col" variants={itemVariants}>
+                <label className="mb-2 font-serif text-sm text-black">
+                  Relationship (optional):
+                </label>
+                <select
+                  value={relationship}
+                  onChange={(e) => setRelationship(e.target.value)}
+                  className="p-2 w-full rounded border border-[#f0d37d] bg-[#fcf6e3] font-serif text-sm text-black hover:bg-[#f8f8f8] focus:outline-none focus:ring-2 focus:ring-[#f0d37d] transition-colors"
+                >
+                  <option value="">Select status</option>
+                  <option value="single">Single</option>
+                  <option value="relationship">In a relationship</option>
+                  <option value="complicated">It's complicated</option>
+                  <option value="talking">Talking stage</option>
+                  <option value="situationship">Situationship</option>
+                  <option value="prefer_not_to_say">Prefer not to say</option>
+                </select>
+              </motion.div>
+            </div>
           </motion.div>
 
           <motion.div className="text-center" variants={itemVariants}>
