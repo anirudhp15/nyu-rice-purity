@@ -569,7 +569,7 @@ export default async function StatisticsPage() {
             </section>
 
             {/* Device Distribution */}
-            <section className="mb-10 text-black">
+            {/* <section className="mb-10 text-black">
               <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
                 Device Distribution
               </h2>
@@ -608,7 +608,7 @@ export default async function StatisticsPage() {
                   </tbody>
                 </table>
               </div>
-            </section>
+            </section> */}
 
             {/* Top 50 Most Common "Yes" Answers  with a scrollable table */}
             <section className="mb-6 text-black">
