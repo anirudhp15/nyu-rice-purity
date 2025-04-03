@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
-import connectToDatabase from "../lib/mongodb";
-import Result from "../models/Result";
-import { purityQuestions } from "../constants/questions";
+import connectToDatabase from "../../lib/mongodb";
+import Result from "../../models/Result";
+import { purityQuestions } from "../../constants/questions";
 import Link from "next/link";
 import Image from "next/image";
-import DemographicTables from "../../app/components/DemographicTables";
-import ScoreDistributionChart from "../../app/components/ScoreDistributionChart";
-import AdminButton from "../../app/components/AdminButton";
+import DemographicTables from "../../../app/components/DemographicTables";
+import ScoreDistributionChart from "../../../app/components/ScoreDistributionChart";
+import SubmissionsOverTimeChart from "../../../app/components/SubmissionsOverTimeChart";
 
 // Define TypeScript interfaces for our statistics
 interface DemographicStat {
@@ -29,6 +29,11 @@ interface DemographicStats {
   living: DemographicCategory;
   race: DemographicCategory;
   relationship: DemographicCategory;
+}
+
+interface SubmissionTimeData {
+  date: string;
+  count: number;
 }
 
 // Function to calculate basic statistics
@@ -74,6 +79,44 @@ async function calculateStats() {
       range: `${min}-${max === 100 ? "100" : max - 1}`,
       count,
     });
+  }
+
+  // Get submissions over time (hourly counts)
+  const submissionsOverTimeResult = await Result.aggregate([
+    {
+      $addFields: {
+        // Ensure timestamp is a date object
+        timestampDate: { $toDate: "$timestamp" },
+      },
+    },
+    {
+      $group: {
+        _id: {
+          // Format for YYYY-MM-DD HH format (hourly granularity)
+          $dateToString: { format: "%Y-%m-%d %H", date: "$timestampDate" },
+        },
+        count: { $sum: 1 },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]);
+
+  // Format for the chart and add proper debugging
+  console.log(
+    "Raw submission time aggregation result:",
+    JSON.stringify(submissionsOverTimeResult)
+  );
+
+  const submissionsOverTime: SubmissionTimeData[] =
+    submissionsOverTimeResult.map((item) => ({
+      date: item._id,
+      count: item.count,
+    }));
+
+  // Ensure we have data for debugging
+  console.log(`Found ${submissionsOverTime.length} hours with submissions`);
+  if (submissionsOverTime.length > 0) {
+    console.log("Sample hourly entries:", submissionsOverTime.slice(0, 5));
   }
 
   // Get question stats (percentage of "yes" answers for each question)
@@ -421,7 +464,8 @@ async function calculateStats() {
     medianScore,
     scoreDistribution,
     deviceStats,
-    questionStats, // Return all stats but only display 10 in the UI
+    questionStats,
+    submissionsOverTime,
     // Demographic data
     genderStats,
     schoolStats,
@@ -441,22 +485,15 @@ async function calculateStats() {
   };
 }
 
-export default async function StatisticsPage() {
-  // Get environment and submission count
-  const isProduction = process.env.NEXT_PUBLIC_NODE_ENV === "production";
-
+export default async function AdminStatisticsPage() {
   try {
     const stats = await calculateStats();
 
-    // In production, require at least 2025 submissions
-    if (isProduction && stats.totalSubmissions < 2025) {
-      return notFound();
-    }
-
+    // No submission count requirement for admin page
     return (
       <main className="mx-auto max-w-3xl">
         {/* Main content container */}
-        <div className="bg-[#fcf6e3] text-center shadow-lg rounded-2xl overflow-hidden  border-2 border-[#f0d37d]">
+        <div className="bg-[#fcf6e3] text-center shadow-lg rounded-2xl overflow-hidden border-2 border-[#f0d37d]">
           {/* Header with Logo */}
           <div className="flex overflow-hidden justify-center items-center p-0 bg-transparent">
             <div className="relative w-full max-w-[550px] mt-8 h-[200px] mx-auto">
@@ -471,12 +508,15 @@ export default async function StatisticsPage() {
           </div>
           <div className="p-8">
             <h1 className="font-serif text-3xl font-bold mb-6 text-[#57068C]">
-              Statistics
+              Admin Statistics
             </h1>
+            <div className="px-4 py-2 mb-4 font-medium text-white bg-red-600 rounded-md">
+              Admin View (Localhost Only)
+            </div>
 
             <div className="mb-8">
               <Link
-                href="/"
+                href="/statistics"
                 className="inline-flex items-center gap-2 px-4 py-2 font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors"
               >
                 <svg
@@ -491,11 +531,8 @@ export default async function StatisticsPage() {
                 >
                   <path d="M19 12H5M12 19l-7-7 7-7" />
                 </svg>
-                Back to Home
+                Back to Public Statistics
               </Link>
-
-              {/* Admin button will only show on localhost */}
-              <AdminButton />
             </div>
 
             {/* Overview Cards */}
@@ -542,8 +579,18 @@ export default async function StatisticsPage() {
               />
             </section>
 
+            {/* Submissions Over Time */}
+            <section className="mb-10 text-black">
+              <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
+                Submissions Over Time
+              </h2>
+              <SubmissionsOverTimeChart
+                submissionsOverTime={stats.submissionsOverTime}
+              />
+            </section>
+
             {/* Device Distribution */}
-            {/* <section className="mb-10 text-black">
+            <section className="mb-10 text-black">
               <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
                 Device Distribution
               </h2>
@@ -565,7 +612,7 @@ export default async function StatisticsPage() {
                         }
                       >
                         <td className="p-3 capitalize font-serif border-t border-[#f0e9d2]">
-                          {device._id}
+                          {device._id || "Unknown"}
                         </td>
                         <td className="p-3 font-serif border-t border-[#f0e9d2]">
                           {device.count.toLocaleString()}
@@ -582,17 +629,18 @@ export default async function StatisticsPage() {
                   </tbody>
                 </table>
               </div>
-            </section> */}
+            </section>
 
-            {/* Top 10 Most Common "Yes" Answers with a scrollable table */}
+            {/* All Questions with "Yes" Answers */}
             <section className="mb-6 text-black">
               <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
-                Top 10 Most Common "Yes" Answers
+                All Questions By "Yes" Percentage
               </h2>
               <div className="overflow-x-auto">
                 <table className="overflow-hidden w-full bg-white rounded-xl shadow-sm border-collapse">
                   <thead className="bg-[#57068C] text-white">
                     <tr>
+                      <th className="p-3 font-serif text-left">Rank</th>
                       <th className="p-3 font-serif text-left">Question</th>
                       <th className="p-3 font-serif text-left whitespace-nowrap">
                         Yes %
@@ -601,13 +649,16 @@ export default async function StatisticsPage() {
                     </tr>
                   </thead>
                   <tbody className="text-[#57068C]">
-                    {stats.questionStats.slice(0, 10).map((question, index) => (
+                    {stats.questionStats.map((question, index) => (
                       <tr
                         key={question.questionId}
                         className={
                           index % 2 === 0 ? "bg-white" : "bg-[#f8f5e6]"
                         }
                       >
+                        <td className="p-3 font-serif text-left border-t border-[#f0e9d2]">
+                          {index + 1}
+                        </td>
                         <td className="p-3 font-serif text-left border-t border-[#f0e9d2]">
                           {question.questionId + 1}. {question.question}
                         </td>
@@ -621,14 +672,52 @@ export default async function StatisticsPage() {
                     ))}
                   </tbody>
                 </table>
-                <div className="mt-4 text-center">
-                  <Link
-                    href="/statistics/all-questions"
-                    className="inline-flex items-center gap-2 px-6 py-2 font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors"
-                  >
-                    View All Questions
-                  </Link>
-                </div>
+              </div>
+            </section>
+
+            {/* Data Completeness Section */}
+            <section className="mb-10 text-black">
+              <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
+                Missing Data Statistics
+              </h2>
+              <div className="overflow-x-auto">
+                <table className="overflow-hidden w-full bg-white rounded-xl shadow-sm border-collapse">
+                  <thead className="bg-[#57068C] text-white">
+                    <tr>
+                      <th className="p-3 font-serif text-left">Field</th>
+                      <th className="p-3 font-serif text-left">
+                        Missing Count
+                      </th>
+                      <th className="p-3 font-serif text-left">Missing %</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-[#57068C]">
+                    {Object.entries(stats.missingCounts).map(
+                      ([field, count], index) => (
+                        <tr
+                          key={field}
+                          className={
+                            index % 2 === 0 ? "bg-white" : "bg-[#f8f5e6]"
+                          }
+                        >
+                          <td className="p-3 capitalize font-serif border-t border-[#f0e9d2]">
+                            {field}
+                          </td>
+                          <td className="p-3 font-serif border-t border-[#f0e9d2]">
+                            {count.toLocaleString()}
+                          </td>
+                          <td className="p-3 font-serif border-t border-[#f0e9d2]">
+                            {stats.totalSubmissions > 0
+                              ? `${Math.round(
+                                  (count / stats.totalSubmissions) * 100
+                                )}%`
+                              : "0%"}
+                          </td>
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </table>
               </div>
             </section>
 
@@ -642,28 +731,6 @@ export default async function StatisticsPage() {
               relationshipStats={stats.relationshipStats}
               demographicStats={stats.demographicStats}
             />
-
-            {/* Take Test Again Button */}
-            <div className="mt-10">
-              <Link
-                href="/"
-                className="inline-flex items-center gap-2 px-6 py-3 font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-4 h-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M21 2v6h-6M21 16a9 9 0 1 1-3-14.5" />
-                </svg>
-                Take Test Again
-              </Link>
-            </div>
           </div>
 
           {/* Footer */}
@@ -671,6 +738,9 @@ export default async function StatisticsPage() {
             <p>
               Based on the Rice Purity Test. Made for NYU students, by NYU
               students.
+            </p>
+            <p className="mt-1 font-semibold text-red-600">
+              Admin View - Localhost Only
             </p>
             <p className="mt-1 text-[10px] text-gray-500">
               <Link
@@ -691,14 +761,14 @@ export default async function StatisticsPage() {
         <div className="bg-[#fcf6e3] text-center shadow-md border-2 border-[#fcefc7] rounded-2xl overflow-hidden">
           <div className="p-8">
             <h1 className="font-serif text-3xl font-bold mb-6 text-[#57068C]">
-              Error Loading Statistics
+              Error Loading Admin Statistics
             </h1>
             <p className="mb-8 font-serif text-lg text-black">
               There was an error loading the statistics. Please try again later.
             </p>
             <div className="mt-8">
               <Link
-                href="/"
+                href="/statistics"
                 className="inline-flex items-center gap-2 px-6 py-3 font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors"
               >
                 <svg
@@ -713,7 +783,7 @@ export default async function StatisticsPage() {
                 >
                   <path d="M19 12H5M12 19l-7-7 7-7" />
                 </svg>
-                Back to Home
+                Back to Public Statistics
               </Link>
             </div>
           </div>
@@ -723,6 +793,9 @@ export default async function StatisticsPage() {
             <p>
               Based on the Rice Purity Test. Made for NYU students, by NYU
               students.
+            </p>
+            <p className="mt-1 font-semibold text-red-600">
+              Admin View - Localhost Only
             </p>
             <p className="mt-1 text-[10px] text-gray-500">
               <Link

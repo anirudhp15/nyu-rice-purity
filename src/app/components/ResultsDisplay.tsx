@@ -154,16 +154,16 @@ const getScoreInterpretation = (score: number): string => {
   if (score >= 60) return "You're picking up some city habits—watch your step.";
   if (score >= 50) return "Halfway gone—NYC is testing your limits.";
   if (score >= 40) return "You're in deep; the city's starting to own you.";
-  if (score >= 30) return "You’re too chill with this madness—rehab’s calling.";
+  if (score >= 30) return "You're too chill with this madness—rehab's calling.";
   if (score >= 20)
-    return "You’ve done some dumb shit. Still got a pulse? Cool.";
+    return "You've done some dumb shit. Still got a pulse? Cool.";
   if (score >= 10) return "NYC ate you alive. You good, fam? Text back.";
   return "You've gone full feral—someone call your mom, seriously.";
 };
 
 // New function to get spicy comparison message
 const getComparisonMessage = (score: number): string => {
-  if (score >= 90) return "I’m too pure for this NYC shit. Judge me: ";
+  if (score >= 90) return "I'm too pure for this NYC shit. Judge me: ";
   if (score >= 80)
     return "Still clinging to my innocence here. Need wilder friends ASAP: ";
   if (score >= 70)
@@ -172,9 +172,9 @@ const getComparisonMessage = (score: number): string => {
     return "My stories aren't as wild as yours. You got crazier stories or what?";
   if (score >= 50)
     return "Middle of the pack at NYU. Are you more innocent or corrupted? ";
-  if (score >= 40) return "NYC’s got me fucked up. Top my score, I dare you: ";
+  if (score >= 40) return "NYC's got me fucked up. Top my score, I dare you: ";
   if (score >= 30)
-    return "My life’s a felony waiting to happen. Your turn, bitch: ";
+    return "My life's a felony waiting to happen. Your turn, bitch: ";
   if (score >= 20) return "Living my best chaotic NYC life. Can you top this? ";
   if (score >= 10)
     return "NYU turned me into a resume liability. Beat me if you can: ";
@@ -606,7 +606,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
   return (
     <AnimatePresence>
       <motion.div
-        className="bg-[#fcf6e3] text-center max-w-3xl mx-auto shadow-md border-2 border-[#ffe390] rounded-2xl"
+        className="bg-[#fcf6e3] text-center max-w-3xl w-full mx-auto shadow-md border-2 border-[#ffe390] rounded-2xl"
         initial="hidden"
         animate={isLoaded ? "visible" : "hidden"}
         variants={containerVariants}
@@ -857,17 +857,6 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
                 </span>
               </span>
             )}
-          </p>
-        </motion.div>
-
-        {/* Footer */}
-        <motion.div
-          className="p-4 text-xs text-black bg-[#fcf6e3] border-t border-[#f0e9d2] rounded-b-2xl"
-          variants={itemVariants}
-        >
-          <p>
-            Based on the Rice Purity Test. Made for NYU students, by NYU
-            students.
           </p>
         </motion.div>
       </motion.div>

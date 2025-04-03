@@ -6,6 +6,7 @@ import { purityQuestions } from "../constants/questions";
 import { trackEvents } from "../lib/analytics";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function TestForm() {
   const router = useRouter();
@@ -131,7 +132,7 @@ export default function TestForm() {
         </div>
       </motion.div>
 
-      <div className="p-6 bg-[#fcf6e3]">
+      <div className="p-6 bg-[#fcf6e3] rounded-b-2xl">
         <motion.p
           className="mx-auto mb-8 max-w-xl font-serif text-lg text-black"
           variants={itemVariants}
@@ -188,7 +189,7 @@ export default function TestForm() {
           </motion.div>
 
           {/* Updated dropdown section for user info */}
-          <motion.div className="p-4 mb-16" variants={containerVariants}>
+          <motion.div className="p-4 mb-8" variants={containerVariants}>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
               {/* Gender dropdown */}
               <motion.div className="flex flex-col" variants={itemVariants}>
@@ -386,7 +387,7 @@ export default function TestForm() {
             <motion.button
               type="submit"
               disabled={loading}
-              className="px-6 py-3 font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors disabled:opacity-50"
+              className="px-4 py-2 font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors disabled:opacity-50"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -434,11 +435,19 @@ export default function TestForm() {
       </motion.div>
       {/* Footer */}
       <motion.div
-        className="p-4 text-xs text-black bg-[#fcf6e3] border-t border-[#f0e9d2]"
+        className="p-4 text-xs text-black bg-[#fcf6e3] border-t border-[#f0e9d2] rounded-b-2xl"
         variants={itemVariants}
       >
         <p>
           Based on the Rice Purity Test. Made for NYU students, by NYU students.
+        </p>
+        <p className="mt-1 text-[10px] text-gray-500">
+          <Link
+            href="/privacy-policy"
+            className="hover:text-[#57068C] hover:underline transition-colors"
+          >
+            Privacy Policy
+          </Link>
         </p>
       </motion.div>
     </motion.div>
