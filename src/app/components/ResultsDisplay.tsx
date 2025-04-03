@@ -192,6 +192,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
   const [timeSincePublic, setTimeSincePublic] = useState<string>(
     "0 days, 0 hours, 0 minutes"
   );
+  const [newSubmission, setNewSubmission] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
   const interpretation = getScoreInterpretation(score);
   const comparisonMessage = getComparisonMessage(score);
@@ -222,7 +223,31 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
         const res = await fetch("/api/submission-count");
         if (res.ok) {
           const data = await res.json();
-          setTotalSubmissions(data.count || 0);
+          const newCount = data.count || 0;
+
+          // Animate counter when it changes
+          if (newCount > totalSubmissions && totalSubmissions > 0) {
+            // If count increased, trigger the animation
+            setNewSubmission(true);
+
+            // After a delay, reset the animation state
+            setTimeout(() => {
+              setNewSubmission(false);
+            }, 2000);
+
+            // Also apply class-based animation for older browsers
+            const counterElement = document.getElementById("submission-count");
+            if (counterElement) {
+              counterElement.classList.add("scale-110");
+              counterElement.classList.add("text-green-600");
+              setTimeout(() => {
+                counterElement.classList.remove("scale-110");
+                counterElement.classList.remove("text-green-600");
+              }, 1000);
+            }
+          }
+
+          setTotalSubmissions(newCount);
         }
       } catch (error) {
         console.error("Error fetching submission count:", error);
@@ -232,8 +257,8 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
     // Initial fetch
     fetchSubmissionCount();
 
-    // Set up polling for real-time updates (every 30 seconds)
-    const submissionCountInterval = setInterval(fetchSubmissionCount, 30000);
+    // Set up polling for real-time updates (every 15 seconds)
+    const submissionCountInterval = setInterval(fetchSubmissionCount, 15000);
 
     // 2. Time since site went public
     const updateTimeSincePublic = () => {
@@ -830,34 +855,112 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
           </motion.div>
         </div>
 
-        <motion.div
-          className="p-4 text-xs text-black bg-[#fcf6e3]"
-          variants={itemVariants}
-        >
-          <p>
-            {totalSubmissions >= 2025 ? (
-              <Link
-                href="/statistics"
-                className="underline hover:text-[#57068C]"
-              >
-                View statistics from {totalSubmissions.toLocaleString()}{" "}
+        <motion.div className="p-4 bg-[#fcf6e3]" variants={itemVariants}>
+          {totalSubmissions >= 2025 ? (
+            <Link
+              href="/statistics"
+              className="flex flex-col items-center p-3 bg-white rounded-lg shadow-sm transition-all duration-300 sm:p-4 hover:shadow-md"
+            >
+              <p className="font-serif text-sm sm:text-base font-bold text-[#57068C]">
+                <span className="inline-block mr-2 animate-pulse">🔥</span>
+                <motion.span
+                  id="submission-count"
+                  className="font-mono font-bold transition-all duration-700"
+                  animate={
+                    newSubmission
+                      ? {
+                          scale: [1, 1.1, 1],
+                          color: ["#57068C", "#10B981", "#57068C"],
+                        }
+                      : {}
+                  }
+                  transition={{ duration: 1.5 }}
+                >
+                  {totalSubmissions.toLocaleString()}
+                </motion.span>{" "}
                 submissions
-              </Link>
-            ) : (
-              <span className="mb-2 text-sm">
-                <span className="font-semibold text-gray-800">
-                  Stats public after 2025 submissions <br /> (Current:{" "}
-                  {totalSubmissions.toLocaleString()}/2025)
+              </p>
+              <p className="mt-1 text-xs text-gray-600">
+                Click to view statistics
+              </p>
+            </Link>
+          ) : (
+            <motion.div
+              className="flex flex-col items-center p-3 bg-white rounded-lg shadow-sm sm:p-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="flex justify-between items-center mb-2 w-full">
+                <span className="text-xs font-semibold text-[#57068C] sm:text-sm">
+                  Stats available soon
                 </span>
-                <span className="ml-2 italic text-[#57068C]">
-                  <span className="font-semibold text-gray-700">
-                    — extended to include new demographic filters <br />
-                  </span>
+                <span className="text-xs sm:text-sm font-bold text-[#57068C]">
+                  {Math.min(Math.round((totalSubmissions / 2025) * 100), 100)}%
+                </span>
+              </div>
+
+              <div className="w-full bg-gray-200 rounded-full h-2.5 sm:h-3 mb-2 overflow-hidden">
+                <motion.div
+                  className="bg-[#57068C] h-full rounded-full relative"
+                  initial={{ width: 0 }}
+                  animate={{
+                    width: `${Math.min(
+                      Math.round((totalSubmissions / 2025) * 100),
+                      100
+                    )}%`,
+                    backgroundColor: newSubmission
+                      ? ["#57068C", "#10B981", "#57068C"]
+                      : "#57068C",
+                  }}
+                  transition={{
+                    duration: newSubmission ? 1.5 : 1,
+                    ease: "easeOut",
+                  }}
+                >
+                  {/* Animated shine effect */}
+                  <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent to-transparent via-white/30 animate-shine"></div>
+                </motion.div>
+              </div>
+
+              <div className="flex flex-col justify-between w-full sm:flex-row">
+                <div className="flex items-center mb-1 sm:mb-0">
+                  <motion.span
+                    id="submission-count"
+                    className="text-sm font-mono font-bold text-[#57068C] transition-all duration-700"
+                    animate={
+                      newSubmission
+                        ? {
+                            scale: [1, 1.1, 1],
+                            color: ["#57068C", "#10B981", "#57068C"],
+                          }
+                        : {}
+                    }
+                    transition={{ duration: 1.5 }}
+                  >
+                    {totalSubmissions.toLocaleString()}
+                  </motion.span>
+                  <span className="ml-1 text-xs text-gray-400">/ 2025</span>
+                </div>
+                <div className="flex items-center text-xs text-gray-400">
                   Live for {timeSincePublic}
-                </span>
-              </span>
-            )}
-          </p>
+                </div>
+              </div>
+              {/* Show a small notification when new submissions arrive */}
+              <AnimatePresence>
+                {newSubmission && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute bottom-[-20px] left-0 right-0 mx-auto text-xs text-green-600 font-medium"
+                  >
+                    New submission received!
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          )}
         </motion.div>
       </motion.div>
 
