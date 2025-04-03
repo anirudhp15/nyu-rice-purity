@@ -419,7 +419,7 @@ async function calculateStats() {
     medianScore,
     scoreDistribution,
     deviceStats,
-    questionStats: questionStats.slice(0, 50), // Only return top 50 for efficiency
+    questionStats, // Return all stats but only display 10 in the UI
     // Demographic data
     genderStats,
     schoolStats,
@@ -610,10 +610,10 @@ export default async function StatisticsPage() {
               </div>
             </section> */}
 
-            {/* Top 50 Most Common "Yes" Answers  with a scrollable table */}
+            {/* Top 10 Most Common "Yes" Answers with a scrollable table */}
             <section className="mb-6 text-black">
               <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
-                Top 50 Most Common "Yes" Answers
+                Top 10 Most Common "Yes" Answers
               </h2>
               <div className="overflow-x-auto">
                 <table className="overflow-hidden w-full bg-white rounded-xl shadow-sm border-collapse">
@@ -627,7 +627,7 @@ export default async function StatisticsPage() {
                     </tr>
                   </thead>
                   <tbody className="text-[#57068C]">
-                    {stats.questionStats.map((question, index) => (
+                    {stats.questionStats.slice(0, 10).map((question, index) => (
                       <tr
                         key={question.questionId}
                         className={
@@ -647,6 +647,14 @@ export default async function StatisticsPage() {
                     ))}
                   </tbody>
                 </table>
+                <div className="mt-4 text-center">
+                  <Link
+                    href="/statistics/all-questions"
+                    className="inline-flex items-center gap-2 px-6 py-2 font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors"
+                  >
+                    View All Questions
+                  </Link>
+                </div>
               </div>
             </section>
 
