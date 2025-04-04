@@ -336,6 +336,7 @@ export default function TestForm() {
                   <option value="asian">Asian</option>
                   <option value="black">Black or African American</option>
                   <option value="hispanic">Hispanic or Latino</option>
+                  <option value="middle_eastern">Middle Eastern</option>
                   <option value="native">
                     American Indian or Alaska Native
                   </option>

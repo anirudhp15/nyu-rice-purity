@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import DemographicTables from "../../app/components/DemographicTables";
 import ScoreDistributionChart from "../../app/components/ScoreDistributionChart";
+import CorrelationHeatmap from "../../app/components/CorrelationHeatmap";
 import AdminButton from "../../app/components/AdminButton";
 
 // Define TypeScript interfaces for our statistics
@@ -46,6 +47,22 @@ async function calculateStats() {
     averageScoreResult.length > 0
       ? Math.round(averageScoreResult[0].averageScore * 100) / 100
       : 0;
+
+  // Calculate NYU Score (average score for those who answered "yes" to the first question)
+  const nyuQuery: { [key: string]: boolean } = {};
+  nyuQuery["answers.0"] = true; // First question: "Been a student at NYU?"
+
+  const nyuScoreResult = await Result.aggregate([
+    { $match: nyuQuery },
+    { $group: { _id: null, nyuScore: { $avg: "$score" } } },
+  ]);
+
+  const nyuScore =
+    nyuScoreResult.length > 0
+      ? Math.round(nyuScoreResult[0].nyuScore * 100) / 100
+      : 0;
+
+  const nyuSubmissionsCount = await Result.countDocuments(nyuQuery);
 
   // Get median score
   const allScores = await Result.find({}, { score: 1, _id: 0 }).sort({
@@ -418,6 +435,8 @@ async function calculateStats() {
   return {
     totalSubmissions,
     averageScore,
+    nyuScore,
+    nyuSubmissionsCount,
     medianScore,
     scoreDistribution,
     deviceStats,
@@ -522,10 +541,14 @@ export default async function StatisticsPage() {
                 </div>
                 <div className="flex flex-col items-center p-6 bg-white rounded-xl shadow-sm">
                   <p className="font-serif text-lg font-semibold text-[#57068C]">
-                    Median Score
+                    NYU Score
                   </p>
                   <p className="font-serif text-4xl font-bold text-[#57068C]">
-                    {stats.medianScore}
+                    {stats.nyuScore}
+                  </p>
+                  <p className="mt-1 font-serif text-xs text-gray-500">
+                    from {stats.nyuSubmissionsCount.toLocaleString()} NYU
+                    students
                   </p>
                 </div>
               </div>
@@ -631,6 +654,26 @@ export default async function StatisticsPage() {
                 </div>
               </div>
             </section>
+
+            {/* School Scores Chart - NEW SECTION */}
+            {/* <section className="mb-10 text-black">
+              <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
+                School Comparison
+              </h2>
+              <SchoolScoresChart schoolStats={stats.schoolStats} />
+            </section> */}
+
+            {/* Correlation Heatmap - NEW SECTION */}
+            {/* <section className="mb-10 text-black">
+              <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
+                Demographic Pattern Analysis
+              </h2>
+              <CorrelationHeatmap
+                yearStats={stats.yearStats}
+                livingStats={stats.livingStats}
+                relationshipStats={stats.relationshipStats}
+              />
+            </section> */}
 
             {/* Pass the demographic stats to the client component for toggle functionality */}
             <DemographicTables
