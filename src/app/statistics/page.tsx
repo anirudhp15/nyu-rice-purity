@@ -610,7 +610,7 @@ export default async function StatisticsPage() {
             {/* Top 10 Most Common "Yes" Answers with a scrollable table */}
             <section className="mb-6 text-black animate-fadeIn animation-delay-700">
               <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
-                Top 10 Most Common "Yes" Answers
+                Most Common "Yes" Answers
               </h2>
               <div className="overflow-x-auto">
                 <table className="overflow-hidden w-full bg-white rounded-xl shadow-sm border-collapse">
