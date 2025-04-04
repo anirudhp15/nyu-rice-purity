@@ -114,7 +114,7 @@ export default function Feedback({
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="p-4 bg-[#fcf6e3] w-full flex flex-col items-center rounded-xl shadow-sm border border-[#f0d37d]"
+        className="p-4 bg-[#fcf6e3] w-full flex flex-col items-center rounded-xl shadow-md border-2 border-[#ffe390]"
       >
         <motion.h3
           variants={itemVariants}
