@@ -653,7 +653,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
           </div>
         </motion.div>
 
-        <div className="p-8 pt-0 bg-[#fcf6e3]">
+        <div className="p-8 pt-0 bg-[#fcf6e3] rounded-b-2xl">
           {/* Score Display */}
           <motion.div className="mb-10 text-[#57068C]" variants={itemVariants}>
             <motion.div
@@ -800,7 +800,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
           >
             <motion.button
               onClick={() => setShowCompareModal(true)}
-              className="flex items-center justify-center whitespace-nowrap font-bold gap-2 px-4 py-2 text-xs lg:text-sm text-[#57068C] bg-white border border-[#57068C] rounded-full hover:bg-gray-50 transition-colors group"
+              className="flex items-center w-auto mx-auto lg:mx-0 justify-center whitespace-nowrap font-bold gap-2 px-4 py-2 text-xs lg:text-sm text-[#57068C] bg-white border border-[#57068C] rounded-full hover:bg-gray-50 transition-colors group"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -831,7 +831,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
               >
                 <Link
                   href="/statistics"
-                  className="flex items-center justify-center gap-2 px-4 py-2 whitespace-nowrap text-xs lg:text-sm font-bold text-[#57068C] bg-white border border-[#57068C] rounded-full hover:bg-gray-50 transition-colors group w-full"
+                  className="flex items-center w-min mx-auto lg:mx-0 justify-center gap-2 px-4 py-2 whitespace-nowrap text-xs lg:text-sm font-bold text-[#57068C] bg-white border border-[#57068C] rounded-full hover:bg-gray-50 transition-colors group"
                 >
                   <FiBarChart2 className="w-4 h-4 transition-transform group-hover:translate-y-[-2px]" />
                   Statistics
@@ -846,7 +846,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
             >
               <Link
                 href="/"
-                className="flex items-center justify-center gap-2 px-4 py-2 whitespace-nowrap text-xs lg:text-sm font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors group w-full"
+                className="flex items-center w-min mx-auto lg:mx-0 justify-center gap-2 px-4 py-2 whitespace-nowrap text-xs lg:text-sm font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors group"
               >
                 <FiRepeat className="w-4 h-4 transition-transform group-hover:rotate-180" />
                 Take Test Again
@@ -855,7 +855,10 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
           </motion.div>
         </div>
 
-        <motion.div className="p-4 bg-[#fcf6e3]" variants={itemVariants}>
+        <motion.div
+          className="p-4 bg-[#fcf6e3] rounded-b-2xl"
+          variants={itemVariants}
+        >
           {totalSubmissions >= 2025 ? (
             <Link
               href="/statistics"
