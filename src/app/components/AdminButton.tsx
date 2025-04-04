@@ -17,10 +17,10 @@ const AdminButton: React.FC = () => {
   if (!isLocalhost) return null;
 
   return (
-    <div className="mt-4">
+    <div className="">
       <Link
         href="/admin/statistics"
-        className="inline-flex items-center gap-2 px-4 py-2 font-bold text-white bg-red-600 rounded-full hover:bg-red-700 transition-colors"
+        className="inline-flex gap-2 items-center px-4 py-2 font-bold text-white bg-red-600 rounded-full transition-colors hover:bg-red-700"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

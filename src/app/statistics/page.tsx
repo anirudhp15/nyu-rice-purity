@@ -475,10 +475,10 @@ export default async function StatisticsPage() {
     return (
       <main className="mx-auto max-w-3xl">
         {/* Main content container */}
-        <div className="bg-[#fcf6e3] text-center shadow-lg rounded-2xl overflow-hidden  border-2 border-[#f0d37d]">
+        <div className="bg-[#fcf6e3] text-center shadow-lg rounded-2xl overflow-hidden border-2 border-[#f0d37d] animate-fadeIn">
           {/* Header with Logo */}
           <div className="flex overflow-hidden justify-center items-center p-0 bg-transparent">
-            <div className="relative w-full max-w-[550px] mt-8 h-[200px] mx-auto">
+            <div className="relative w-full max-w-[550px] mt-8 h-[200px] mx-auto animate-slideDown">
               <Image
                 src="/images/bannerCropped.png"
                 alt="NYU Purity Test"
@@ -489,11 +489,11 @@ export default async function StatisticsPage() {
             </div>
           </div>
           <div className="p-8">
-            <h1 className="font-serif text-3xl font-bold mb-6 text-[#57068C]">
+            <h1 className="font-serif text-3xl font-bold mb-6 text-[#57068C] animate-fadeIn">
               Statistics
             </h1>
 
-            <div className="mb-8">
+            <div className="flex flex-wrap gap-4 justify-center items-center mb-8 animate-fadeIn animation-delay-100">
               <Link
                 href="/"
                 className="inline-flex items-center gap-2 px-4 py-2 font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors"
@@ -518,12 +518,12 @@ export default async function StatisticsPage() {
             </div>
 
             {/* Overview Cards */}
-            <section className="mb-10 text-black">
+            <section className="mb-10 text-black animate-fadeIn animation-delay-200">
               <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
                 Overview
               </h2>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <div className="flex flex-col items-center p-6 bg-white rounded-xl shadow-sm">
+                <div className="flex flex-col items-center p-6 bg-white rounded-xl shadow-sm animate-slideUp animation-delay-300">
                   <p className="font-serif text-lg font-semibold text-[#57068C]">
                     Total Submissions
                   </p>
@@ -531,7 +531,7 @@ export default async function StatisticsPage() {
                     {stats.totalSubmissions.toLocaleString()}
                   </p>
                 </div>
-                <div className="flex flex-col items-center p-6 bg-white rounded-xl shadow-sm">
+                <div className="flex flex-col items-center p-6 bg-white rounded-xl shadow-sm animate-slideUp animation-delay-400">
                   <p className="font-serif text-lg font-semibold text-[#57068C]">
                     Average Score
                   </p>
@@ -539,7 +539,7 @@ export default async function StatisticsPage() {
                     {stats.averageScore}
                   </p>
                 </div>
-                <div className="flex flex-col items-center p-6 bg-white rounded-xl shadow-sm">
+                <div className="flex flex-col items-center p-6 bg-white rounded-xl shadow-sm animate-slideUp animation-delay-500">
                   <p className="font-serif text-lg font-semibold text-[#57068C]">
                     NYU Score
                   </p>
@@ -555,7 +555,7 @@ export default async function StatisticsPage() {
             </section>
 
             {/* Score Distribution */}
-            <section className="mb-10 text-black">
+            <section className="mb-10 text-black animate-fadeIn animation-delay-600">
               <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
                 Score Distribution
               </h2>
@@ -608,7 +608,7 @@ export default async function StatisticsPage() {
             </section> */}
 
             {/* Top 10 Most Common "Yes" Answers with a scrollable table */}
-            <section className="mb-6 text-black">
+            <section className="mb-6 text-black animate-fadeIn animation-delay-700">
               <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
                 Top 10 Most Common "Yes" Answers
               </h2>
@@ -644,7 +644,7 @@ export default async function StatisticsPage() {
                     ))}
                   </tbody>
                 </table>
-                <div className="mt-4 text-center">
+                <div className="my-4 text-center">
                   <Link
                     href="/statistics/all-questions"
                     className="inline-flex items-center gap-2 px-6 py-2 font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors"
@@ -676,18 +676,20 @@ export default async function StatisticsPage() {
             </section> */}
 
             {/* Pass the demographic stats to the client component for toggle functionality */}
-            <DemographicTables
-              genderStats={stats.genderStats}
-              schoolStats={stats.schoolStats}
-              yearStats={stats.yearStats}
-              livingStats={stats.livingStats}
-              raceStats={stats.raceStats}
-              relationshipStats={stats.relationshipStats}
-              demographicStats={stats.demographicStats}
-            />
+            <div className="animate-fadeIn animation-delay-800">
+              <DemographicTables
+                genderStats={stats.genderStats}
+                schoolStats={stats.schoolStats}
+                yearStats={stats.yearStats}
+                livingStats={stats.livingStats}
+                raceStats={stats.raceStats}
+                relationshipStats={stats.relationshipStats}
+                demographicStats={stats.demographicStats}
+              />
+            </div>
 
             {/* Take Test Again Button */}
-            <div className="mt-10">
+            <div className="mt-10 animate-fadeIn animation-delay-900">
               <Link
                 href="/"
                 className="inline-flex items-center gap-2 px-6 py-3 font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors"
@@ -710,7 +712,7 @@ export default async function StatisticsPage() {
           </div>
 
           {/* Footer */}
-          <div className="p-4 text-xs text-black bg-[#fcf6e3] border-t border-[#f0e9d2]">
+          <div className="p-4 text-xs text-black bg-[#fcf6e3] border-t border-[#f0e9d2] animate-fadeIn animation-delay-1000">
             <p>
               Based on the Rice Purity Test. Made for NYU students, by NYU
               students.
@@ -731,18 +733,76 @@ export default async function StatisticsPage() {
     console.error("Error loading statistics:", error);
     return (
       <main className="p-6 mx-auto max-w-3xl">
-        <div className="bg-[#fcf6e3] text-center shadow-md border-2 border-[#fcefc7] rounded-2xl overflow-hidden">
-          <div className="p-8">
-            <h1 className="font-serif text-3xl font-bold mb-6 text-[#57068C]">
-              Error Loading Statistics
+        <div className="bg-[#fcf6e3] text-center shadow-lg rounded-2xl overflow-hidden border-2 border-[#f0d37d] animate-fadeIn relative">
+          {/* Error illustration */}
+          <div className="relative h-48 bg-gradient-to-b from-[#57068C]/10 to-transparent overflow-hidden">
+            <div className="flex absolute inset-0 justify-center items-center">
+              <svg
+                className="w-32 h-32 text-[#57068C]/30 animate-pulse"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12" y2="16"></line>
+              </svg>
+            </div>
+            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#fcf6e3] to-transparent"></div>
+          </div>
+
+          <div className="p-6 sm:p-8">
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold mb-4 text-[#57068C] animate-fadeIn">
+              Oops! Statistics Unavailable
             </h1>
-            <p className="mb-8 font-serif text-lg text-black">
-              There was an error loading the statistics. Please try again later.
+            <p className="mx-auto mb-6 max-w-md font-serif text-base text-gray-700 delay-150 sm:text-lg animate-fadeIn">
+              We're having trouble loading the statistics right now. Please
+              check back later while we fix this issue.
             </p>
-            <div className="mt-8">
+
+            {/* Animated suggestions */}
+            <div className="grid gap-3 mx-auto mb-8 max-w-xs text-sm text-left delay-300 animate-fadeIn">
+              <div className="flex items-center bg-white/50 backdrop-blur-sm p-3 rounded-lg border border-[#f0d37d]/50 transform hover:scale-105 transition-all active:scale-95 touch-manipulation">
+                <div className="mr-3 text-[#57068C]">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-5 h-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  </svg>
+                </div>
+                <div>Try refreshing the page</div>
+              </div>
+              <div className="flex items-center bg-white/50 backdrop-blur-sm p-3 rounded-lg border border-[#f0d37d]/50 transform hover:scale-105 transition-all active:scale-95 touch-manipulation">
+                <div className="mr-3 text-[#57068C]">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-5 h-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                </div>
+                <div>Come back in a few minutes</div>
+              </div>
+            </div>
+
+            <div className="mb-8 animate-bounce">
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 px-6 py-3 font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-all shadow-md hover:shadow-lg active:scale-95 touch-manipulation"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -761,8 +821,11 @@ export default async function StatisticsPage() {
             </div>
           </div>
 
+          {/* Decorative elements */}
+          <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-r from-[#57068C]/20 via-[#f0d37d]/30 to-[#57068C]/20"></div>
+
           {/* Footer */}
-          <div className="p-4 text-xs text-black bg-[#fcf6e3] border-t border-[#f0e9d2]">
+          <div className="p-4 text-xs text-gray-700 bg-[#fcf6e3] border-t border-[#f0e9d2]">
             <p>
               Based on the Rice Purity Test. Made for NYU students, by NYU
               students.

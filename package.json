@@ -15,7 +15,7 @@
     "chartjs-adapter-date-fns": "^3.0.0",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
-    "framer-motion": "^12.6.2",
+    "framer-motion": "^12.6.3",
     "html2canvas": "^1.4.1",
     "limiter": "^3.0.0",
     "mongodb": "^6.15.0",
