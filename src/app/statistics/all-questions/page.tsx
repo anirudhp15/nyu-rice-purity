@@ -68,7 +68,7 @@ export default async function AllQuestionsPage() {
               />
             </div>
           </div>
-          <div className="p-8">
+          <div className="p-4">
             <h1 className="font-serif text-3xl font-bold mb-6 text-[#57068C]">
               All Question Statistics
             </h1>
@@ -97,7 +97,7 @@ export default async function AllQuestionsPage() {
             {/* All 100 Questions with "Yes" Percentages */}
             <section className="mb-6 text-black">
               <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
-                All Questions Ranked by "Yes" Percentage
+                All Questions Ranked by "Yes" %
               </h2>
               <div className="overflow-x-auto text-xs lg:text-base">
                 <table className="overflow-hidden w-full bg-white rounded-xl shadow-sm border-collapse">
