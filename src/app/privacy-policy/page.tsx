@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function PrivacyPolicy() {
   const containerVariants = {
@@ -45,6 +46,22 @@ export default function PrivacyPolicy() {
         animate="visible"
         variants={containerVariants}
       >
+        {/* Header with Logo */}
+        <motion.div
+          className="flex overflow-hidden justify-center items-center p-0 -mx-8 -mt-8 mb-6 bg-transparent"
+          variants={itemVariants}
+        >
+          <div className="relative w-full max-w-[550px] h-[200px] mx-auto mt-8">
+            <Image
+              src="/images/bannerCropped.png"
+              alt="NYU Purity Test"
+              fill
+              priority
+              className="object-contain"
+            />
+          </div>
+        </motion.div>
+
         <motion.h1
           className="font-serif text-3xl font-bold mb-6 text-[#57068C] text-center"
           variants={itemVariants}
