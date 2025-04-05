@@ -485,7 +485,7 @@ export default async function StatisticsPage() {
               />
             </div>
           </div>
-          <div className="p-8">
+          <div className="p-4">
             <h1 className="font-serif text-3xl font-bold mb-6 text-[#57068C] animate-fadeIn">
               Statistics
             </h1>
@@ -565,7 +565,7 @@ export default async function StatisticsPage() {
             {/* Gender Score Distribution */}
             <section className="mb-10 text-black animate-fadeIn animation-delay-700">
               <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
-                Gender Analysis
+                Gender Score Distribution
               </h2>
               <GenderScoreDistributionChart
                 genderStats={stats.genderStats}
@@ -618,9 +618,9 @@ export default async function StatisticsPage() {
             {/* Top 10 Most Common "Yes" Answers with a scrollable table */}
             <section className="mb-6 text-black animate-fadeIn animation-delay-800">
               <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
-                Top 10 Most Common "Yes" Answers
+                Most Common "Yes" Answers
               </h2>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto text-xs lg:text-base">
                 <table className="overflow-hidden w-full bg-white rounded-xl shadow-sm border-collapse">
                   <thead className="bg-[#57068C] text-white">
                     <tr>
