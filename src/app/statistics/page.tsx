@@ -469,11 +469,6 @@ export default async function StatisticsPage() {
   try {
     const stats = await calculateStats();
 
-    // In production, require at least 2025 submissions
-    if (isProduction && stats.totalSubmissions < 2025) {
-      return notFound();
-    }
-
     return (
       <main className="mx-auto max-w-3xl">
         {/* Main content container */}
