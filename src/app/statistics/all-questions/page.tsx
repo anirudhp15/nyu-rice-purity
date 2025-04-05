@@ -210,7 +210,15 @@ export default async function AllQuestionsPage() {
           <div className="p-4 text-xs text-black bg-[#fcf6e3] border-t border-[#f0e9d2]">
             <p>
               Based on the Rice Purity Test. Made for NYU students, by NYU
-              students.
+              students. Not NYU affiliated.
+            </p>
+            <p className="mt-1 text-[10px] text-gray-500">
+              <Link
+                href="/privacy-policy"
+                className="hover:text-[#57068C] hover:underline transition-colors"
+              >
+                Privacy Policy
+              </Link>
             </p>
           </div>
         </div>

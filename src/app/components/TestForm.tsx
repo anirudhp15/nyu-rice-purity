@@ -441,6 +441,7 @@ export default function TestForm() {
       >
         <p>
           Based on the Rice Purity Test. Made for NYU students, by NYU students.
+          Not NYU affiliated.
         </p>
         <p className="mt-1 text-[10px] text-gray-500">
           <Link

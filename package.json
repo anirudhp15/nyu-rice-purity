@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "find-low-scores": "node scripts/findLowScores.js",
+    "add-non-binary-data": "node scripts/addNonBinaryData.js",
+    "standardize-demographics": "node scripts/standardizeDemographics.js"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

@@ -215,7 +215,7 @@ export default function Feedback({
         >
           <p>
             Based on the Rice Purity Test. Made for NYU students, by NYU
-            students.
+            students. Not NYU affiliated.
           </p>
           <p className="mt-1 text-[10px] text-gray-500">
             <Link

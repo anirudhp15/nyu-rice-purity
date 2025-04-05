@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import DemographicTables from "../../app/components/DemographicTables";
 import ScoreDistributionChart from "../../app/components/ScoreDistributionChart";
+import GenderScoreDistributionChart from "../../app/components/GenderScoreDistributionChart";
 import CorrelationHeatmap from "../../app/components/CorrelationHeatmap";
 import AdminButton from "../../app/components/AdminButton";
 
@@ -79,11 +80,11 @@ async function calculateStats() {
         : scores[mid];
   }
 
-  // Get score distribution in ranges (0-10, 11-20, etc.)
+  // Get score distribution in ranges (0-5, 5-10, etc.)
   const scoreDistribution = [];
-  for (let i = 0; i < 10; i++) {
-    const min = i * 10;
-    const max = min + 10;
+  for (let i = 0; i < 20; i++) {
+    const min = i * 5;
+    const max = min + 5;
     const count = await Result.countDocuments({
       score: { $gte: min, $lt: max < 100 ? max : 101 },
     });
@@ -201,6 +202,7 @@ async function calculateStats() {
       count: missingGenderCount,
       avgScore,
       medianScore,
+      scores: scores, // Include scores array for missing data
     });
   }
 
@@ -214,7 +216,7 @@ async function calculateStats() {
           ? (stat.scores[mid - 1] + stat.scores[mid]) / 2
           : stat.scores[mid];
       stat.avgScore = Math.round(stat.avgScore * 100) / 100;
-      delete stat.scores; // Remove the scores array to save memory
+      // Don't delete stat.scores here - keep it for the gender distribution chart
     } else {
       stat.medianScore = stat.medianScore || 0;
     }
@@ -565,6 +567,17 @@ export default async function StatisticsPage() {
               />
             </section>
 
+            {/* Gender Score Distribution */}
+            <section className="mb-10 text-black animate-fadeIn animation-delay-700">
+              <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
+                Gender Analysis
+              </h2>
+              <GenderScoreDistributionChart
+                genderStats={stats.genderStats}
+                bucketSize={10}
+              />
+            </section>
+
             {/* Device Distribution */}
             {/* <section className="mb-10 text-black">
               <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
@@ -608,7 +621,7 @@ export default async function StatisticsPage() {
             </section> */}
 
             {/* Top 10 Most Common "Yes" Answers with a scrollable table */}
-            <section className="mb-6 text-black animate-fadeIn animation-delay-700">
+            <section className="mb-6 text-black animate-fadeIn animation-delay-800">
               <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
                 Top 10 Most Common "Yes" Answers
               </h2>
@@ -676,7 +689,7 @@ export default async function StatisticsPage() {
             </section> */}
 
             {/* Pass the demographic stats to the client component for toggle functionality */}
-            <div className="animate-fadeIn animation-delay-800">
+            <div className="animate-fadeIn animation-delay-900">
               <DemographicTables
                 genderStats={stats.genderStats}
                 schoolStats={stats.schoolStats}
@@ -689,7 +702,7 @@ export default async function StatisticsPage() {
             </div>
 
             {/* Take Test Again Button */}
-            <div className="mt-10 animate-fadeIn animation-delay-900">
+            <div className="mt-10 animate-fadeIn animation-delay-1000">
               <Link
                 href="/"
                 className="inline-flex items-center gap-2 px-6 py-3 font-bold text-white bg-[#57068C] rounded-full hover:bg-[#7A29A1] transition-colors"
@@ -712,7 +725,7 @@ export default async function StatisticsPage() {
           </div>
 
           {/* Footer */}
-          <div className="p-4 text-xs text-black bg-[#fcf6e3] border-t border-[#f0e9d2] animate-fadeIn animation-delay-1000">
+          <div className="p-4 text-xs text-black bg-[#fcf6e3] border-t border-[#f0e9d2] animate-fadeIn animation-delay-1100">
             <p>
               Based on the Rice Purity Test. Made for NYU students, by NYU
               students.
@@ -767,7 +780,7 @@ export default async function StatisticsPage() {
           <div className="p-4 text-xs text-black bg-[#fcf6e3] border-t border-[#f0e9d2]">
             <p>
               Based on the Rice Purity Test. Made for NYU students, by NYU
-              students.
+              students. Not NYU affiliated.
             </p>
             <p className="mt-1 text-[10px] text-gray-500">
               <Link

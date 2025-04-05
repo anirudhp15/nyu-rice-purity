@@ -7,6 +7,7 @@ import Image from "next/image";
 import DemographicTables from "../../../app/components/DemographicTables";
 import ScoreDistributionChart from "../../../app/components/ScoreDistributionChart";
 import SubmissionsOverTimeChart from "../../../app/components/SubmissionsOverTimeChart";
+import GenderScoreDistributionChart from "../../../app/components/GenderScoreDistributionChart";
 
 // Define TypeScript interfaces for our statistics
 interface DemographicStat {
@@ -85,8 +86,14 @@ async function calculateStats() {
   const submissionsOverTimeResult = await Result.aggregate([
     {
       $addFields: {
-        // Ensure timestamp is a date object
-        timestampDate: { $toDate: "$timestamp" },
+        // Ensure timestamp is a date object and greater than 2025-3-31
+        timestampDate: {
+          $cond: {
+            if: { $gt: [{ $toDate: "$timestamp" }, new Date("2025-03-31")] },
+            then: { $toDate: "$timestamp" },
+            else: null,
+          },
+        },
       },
     },
     {
@@ -240,7 +247,6 @@ async function calculateStats() {
           ? (stat.scores[mid - 1] + stat.scores[mid]) / 2
           : stat.scores[mid];
       stat.avgScore = Math.round(stat.avgScore * 100) / 100;
-      delete stat.scores; // Remove the scores array to save memory
     } else {
       stat.medianScore = stat.medianScore || 0;
     }
@@ -458,6 +464,7 @@ async function calculateStats() {
   // Sort question stats by yes percentage (most common "yes" answers first)
   questionStats.sort((a, b) => b.yesPercentage - a.yesPercentage);
 
+  // Ensure we explicitly include genderStats with scores in the return object
   return {
     totalSubmissions,
     averageScore,
@@ -467,7 +474,7 @@ async function calculateStats() {
     questionStats,
     submissionsOverTime,
     // Demographic data
-    genderStats,
+    genderStats, // Now includes scores for the gender chart
     schoolStats,
     yearStats,
     livingStats,
@@ -569,7 +576,7 @@ export default async function AdminStatisticsPage() {
             </section>
 
             {/* Score Distribution */}
-            <section className="mb-10 text-black">
+            <section className="mb-10 text-black animate-fadeIn animation-delay-600">
               <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
                 Score Distribution
               </h2>
@@ -579,8 +586,19 @@ export default async function AdminStatisticsPage() {
               />
             </section>
 
-            {/* Submissions Over Time */}
-            <section className="mb-10 text-black">
+            {/* Gender Score Distribution - NEW */}
+            <section className="mb-10 text-black animate-fadeIn animation-delay-700">
+              <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
+                Gender Analysis
+              </h2>
+              <GenderScoreDistributionChart
+                genderStats={stats.genderStats}
+                bucketSize={5}
+              />
+            </section>
+
+            {/* Submissions Over Time Chart */}
+            <section className="mb-10 text-black animate-fadeIn animation-delay-800">
               <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
                 Submissions Over Time
               </h2>
@@ -792,7 +810,7 @@ export default async function AdminStatisticsPage() {
           <div className="p-4 text-xs text-black bg-[#fcf6e3] border-t border-[#f0e9d2]">
             <p>
               Based on the Rice Purity Test. Made for NYU students, by NYU
-              students.
+              students. Not NYU affiliated.
             </p>
             <p className="mt-1 font-semibold text-red-600">
               Admin View - Localhost Only
