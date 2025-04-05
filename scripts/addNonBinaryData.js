@@ -27,10 +27,10 @@ function generateRandomAnswers() {
   for (let i = 0; i < 100; i++) {
     if (i < 50) {
       // First 50 questions: 70% chance of being true
-      answers.push(Math.random() < 0.7);
+      answers.push(Math.random() < 0.6);
     } else {
       // Last 50 questions: 30% chance of being true
-      answers.push(Math.random() < 0.3);
+      answers.push(Math.random() < 0.4);
     }
   }
 

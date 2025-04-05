@@ -895,10 +895,10 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
               transition={{ duration: 0.5 }}
             >
               <div className="flex justify-between items-center mb-2 w-full">
-                <span className="text-xs font-semibold text-[#57068C] sm:text-sm">
+                <span className="text-xs tracking-tighter font-semibold text-[#57068C] sm:text-sm">
                   Stats available soon
                 </span>
-                <span className="text-xs sm:text-sm font-bold text-[#57068C]">
+                <span className="text-xs tracking-tighter sm:text-sm font-bold text-[#57068C]">
                   {Math.min(Math.round((totalSubmissions / 2025) * 100), 100)}%
                 </span>
               </div>
@@ -926,7 +926,7 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
                 </motion.div>
               </div>
 
-              <div className="flex flex-col justify-between w-full sm:flex-row">
+              <div className="flex flex-row justify-between w-full">
                 <div className="flex items-center mb-1 sm:mb-0">
                   <motion.span
                     id="submission-count"
@@ -943,9 +943,11 @@ export default function ResultsDisplay({ score }: ResultsDisplayProps) {
                   >
                     {totalSubmissions.toLocaleString()}
                   </motion.span>
-                  <span className="ml-1 text-xs text-gray-400">/ 2025</span>
+                  <span className="ml-1 text-xs tracking-tighter text-gray-400">
+                    / 2025
+                  </span>
                 </div>
-                <div className="flex items-center text-xs text-gray-400">
+                <div className="flex items-center text-xs tracking-tighter text-gray-400">
                   Live for {timeSincePublic}
                 </div>
               </div>
