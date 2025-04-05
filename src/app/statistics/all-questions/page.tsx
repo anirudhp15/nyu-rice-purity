@@ -99,7 +99,7 @@ export default async function AllQuestionsPage() {
               <h2 className="inline-block mb-6 font-serif text-xl font-bold border-b-2 border-black">
                 All Questions Ranked by "Yes" Percentage
               </h2>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto text-xs lg:text-base">
                 <table className="overflow-hidden w-full bg-white rounded-xl shadow-sm border-collapse">
                   <thead className="bg-[#57068C] text-white">
                     <tr>
